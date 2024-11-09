@@ -9,13 +9,14 @@
 #endif
 
 
+template <typename T>
 void BM_RawSum(benchmark::State& state) {
     const int vector_size = state.range(0);  // Vector size defined by benchmark range
 
     for (auto _ : state) {
-        int* vec1 = static_cast<int*>(std::malloc(vector_size * sizeof(int)));
-        int* vec2 = static_cast<int*>(std::malloc(vector_size * sizeof(int)));
-        int* result = static_cast<int*>(std::malloc(vector_size * sizeof(int)));
+        T* vec1 = static_cast<T*>(std::malloc(vector_size * sizeof(T)));
+        T* vec2 = static_cast<T*>(std::malloc(vector_size * sizeof(T)));
+        T* result = static_cast<T*>(std::malloc(vector_size * sizeof(T)));
 
         // Initialize arrays
         for (int i = 0; i < vector_size; ++i) {
@@ -39,16 +40,16 @@ void BM_RawSum(benchmark::State& state) {
     state.SetItemsProcessed(state.iterations() * vector_size);
 }
 
-
+template <typename T>
 void BM_AlignedAllocSum(benchmark::State& state) {
     const int vector_size = state.range(0);
     constexpr std::size_t alignment = 64; 
 
     for (auto _ : state) {
         // Allocate aligned memory using std::aligned_alloc
-        int* vec1 = static_cast<int*>(std::aligned_alloc(alignment, vector_size * sizeof(int)));
-        int* vec2 = static_cast<int*>(std::aligned_alloc(alignment, vector_size * sizeof(int)));
-        int* result = static_cast<int*>(std::aligned_alloc(alignment, vector_size * sizeof(int)));
+        T* vec1 = static_cast<T*>(std::aligned_alloc(alignment, vector_size * sizeof(T)));
+        T* vec2 = static_cast<T*>(std::aligned_alloc(alignment, vector_size * sizeof(T)));
+        T* result = static_cast<T*>(std::aligned_alloc(alignment, vector_size * sizeof(T)));
 
         // Check for successful allocation
         if (!vec1 || !vec2 || !result) {
@@ -78,13 +79,15 @@ void BM_AlignedAllocSum(benchmark::State& state) {
     state.SetItemsProcessed(state.iterations() * vector_size);
 }
 
+
+template <typename T>
 void BM_VectorSum(benchmark::State& state) {
     const int vector_size = state.range(0);  // Vector size defined by benchmark range
 
     for (auto _ : state) {
-        std::vector<int> vec1(vector_size, 1);
-        std::vector<int> vec2(vector_size, 2);
-        std::vector<int> result(vector_size);
+        std::vector<T> vec1(vector_size, 1);
+        std::vector<T> vec2(vector_size, 2);
+        std::vector<T> result(vector_size);
 
         // compute loop
         for (int i = 0; i < vector_size; ++i) {
@@ -99,12 +102,13 @@ void BM_VectorSum(benchmark::State& state) {
 }
 
 #ifdef XBENCHMARK_USE_XTENSOR
+template <typename T>
 void BM_XArraySum(benchmark::State& state) {
     const int vector_size = state.range(0);
     for (auto _ : state) {
-        xt::xarray<int> vec1 = xt::xarray<int>::from_shape({vector_size});
-        xt::xarray<int> vec2 = xt::xarray<int>::from_shape({vector_size});
-        xt::xarray<int> result = xt::xarray<int>::from_shape({vector_size});
+        xt::xarray<T> vec1 = xt::xarray<T>::from_shape({vector_size});
+        xt::xarray<T> vec2 = xt::xarray<T>::from_shape({vector_size});
+        xt::xarray<T> result = xt::xarray<T>::from_shape({vector_size});
 
         vec1.fill(1);
         vec2.fill(2);
@@ -118,12 +122,13 @@ void BM_XArraySum(benchmark::State& state) {
 #endif
 
 #ifdef XBENCHMARK_USE_XTENSOR
+template <typename T>
 void BM_XTensorSum(benchmark::State& state) {
     const int vector_size = state.range(0);
     for (auto _ : state) {
-        xt::xtensor<int, 1> vec1   = xt::xtensor<int,1>::from_shape({vector_size});
-        xt::xtensor<int, 1> vec2   = xt::xtensor<int,1>::from_shape({vector_size});
-        xt::xtensor<int, 1> result = xt::xtensor<int,1>::from_shape({vector_size});
+        xt::xtensor<T, 1> vec1   = xt::xtensor<T,1>::from_shape({vector_size});
+        xt::xtensor<T, 1> vec2   = xt::xtensor<T,1>::from_shape({vector_size});
+        xt::xtensor<T, 1> result = xt::xtensor<T,1>::from_shape({vector_size});
 
         vec1.fill(1);
         vec2.fill(2);
@@ -137,12 +142,12 @@ void BM_XTensorSum(benchmark::State& state) {
 #endif
 
 #ifdef XBENCHMARK_USE_XTENSOR
-template <std::size_t T>
+template <std::size_t S>
 void BM_XTensorFixedSum(benchmark::State& state) {
     for (auto _ : state) {
-        xt::xtensor_fixed<int, xt::xshape<T>> vec1 ; 
-        xt::xtensor_fixed<int, xt::xshape<T>> vec2 ;
-        xt::xtensor_fixed<int, xt::xshape<T>> result;
+        xt::xtensor_fixed<int, xt::xshape<S>> vec1 ; 
+        xt::xtensor_fixed<int, xt::xshape<S>> vec2 ;
+        xt::xtensor_fixed<int, xt::xshape<S>> result;
 
         vec1.fill(1);
         vec2.fill(2);
@@ -150,19 +155,35 @@ void BM_XTensorFixedSum(benchmark::State& state) {
         xt::noalias(result) = vec1 + vec2;
         benchmark::DoNotOptimize(result.data());
     }
-    state.SetItemsProcessed(state.iterations() * T);
+    state.SetItemsProcessed(state.iterations() * S);
 }
 #endif
 
 
 // Power of two rule
-BENCHMARK(BM_RawSum)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
-BENCHMARK(BM_AlignedAllocSum)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
-BENCHMARK(BM_VectorSum)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
+BENCHMARK_TEMPLATE(BM_RawSum, int32_t)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
+BENCHMARK_TEMPLATE(BM_RawSum, float)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
+
+BENCHMARK_TEMPLATE(BM_AlignedAllocSum, int32_t)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
+BENCHMARK_TEMPLATE(BM_AlignedAllocSum, float)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
+
+BENCHMARK_TEMPLATE(BM_VectorSum, int32_t)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
+BENCHMARK_TEMPLATE(BM_VectorSum, float)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
+
 
 #ifdef XBENCHMARK_USE_XTENSOR
-BENCHMARK(BM_XArraySum)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
-BENCHMARK(BM_XTensorSum)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
+BENCHMARK_TEMPLATE(BM_XArraySum, int32_t)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
+BENCHMARK_TEMPLATE(BM_XArraySum, float)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
+
+
+BENCHMARK_TEMPLATE(BM_XTensorSum, int32_t)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
+BENCHMARK_TEMPLATE(BM_XTensorSum, float)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
+#endif
+
+
+/**
+// --> Not really dynamic here ...
+#ifdef XBENCHMARK_USE_XTENSOR
 BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 8);
 BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 2);
 BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 4);
@@ -189,7 +210,7 @@ BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 65536);
 //BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 8388608);
 //BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 16777216);
 #endif
-
+**/
 
 
 BENCHMARK_MAIN();
