@@ -188,41 +188,41 @@ void BM_XTensorFixedSum(benchmark::State& state) {
 
 
 // Power of two rule
-BENCHMARK_TEMPLATE(BM_RawSum, int32_t, std::plus<int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_RawSum, int32_t, std::multiplies<int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_RawSum, int32_t, std::divides<int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_RawSum, float, std::plus<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_RawSum, float, std::multiplies<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_RawSum, float, std::divides<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_RawSum, int32_t,	std::plus<	int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_RawSum, int32_t,	std::multiplies<int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_RawSum, int32_t,	std::divides<	int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_RawSum, float,	std::plus<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_RawSum, float,	std::multiplies<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_RawSum, float,	std::divides<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 
-BENCHMARK_TEMPLATE(BM_AlignedAllocSum, int32_t, std::plus<int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_AlignedAllocSum, int32_t, std::divides<int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_AlignedAllocSum, int32_t, std::multiplies<int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_AlignedAllocSum, float, std::plus<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_AlignedAllocSum, float, std::multiplies<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_AlignedAllocSum, float, std::divides<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_AlignedAllocSum, int32_t,	std::plus<	int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_AlignedAllocSum, int32_t,	std::divides<	int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_AlignedAllocSum, int32_t,	std::multiplies<int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_AlignedAllocSum, float,	std::plus<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_AlignedAllocSum, float,	std::multiplies<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_AlignedAllocSum, float,	std::divides<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 
-BENCHMARK_TEMPLATE(BM_VectorSum, int32_t, std::plus<int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_VectorSum, int32_t, std::multiplies<int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_VectorSum, int32_t, std::divides<int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_VectorSum, float, std::plus<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_VectorSum, float, std::multiplies<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_VectorSum, float, std::divides<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_VectorSum, int32_t,	std::plus<	int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_VectorSum, int32_t, 	std::multiplies<int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_VectorSum, int32_t, 	std::divides<	int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_VectorSum, float,		std::plus<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_VectorSum, float, 	std::multiplies<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_VectorSum, float, 	std::divides<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 
 #ifdef XBENCHMARK_USE_XTENSOR
-BENCHMARK_TEMPLATE(BM_XArraySum, int32_t, std::plus<int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_XArraySum, int32_t, std::multiplies<int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_XArraySum, int32_t, std::divides<int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_XArraySum, float, std::plus<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_XArraySum, float, std::multiplies<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_XArraySum, float, std::divides<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_XArraySum, int32_t,	std::plus<	int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_XArraySum, int32_t,	std::multiplies<int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_XArraySum, int32_t,	std::divides<	int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_XArraySum, float, 	std::plus<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_XArraySum, float, 	std::multiplies<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_XArraySum, float, 	std::divides<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 
-BENCHMARK_TEMPLATE(BM_XTensorSum, int32_t, std::plus<int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_XTensorSum, int32_t, std::multiplies<int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_XTensorSum, int32_t, std::divides<int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_XTensorSum, float, std::plus<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_XTensorSum, float, std::multiplies<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_XTensorSum, float, std::divides<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_XTensorSum, int32_t,	std::plus<	int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_XTensorSum, int32_t,	std::multiplies<int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_XTensorSum, int32_t,	std::divides<	int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_XTensorSum, float,	std::plus<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_XTensorSum, float,	std::multiplies<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_XTensorSum, float,	std::divides<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 
 #endif
 
