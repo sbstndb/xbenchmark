@@ -17,7 +17,7 @@ if(XBENCHMARK_USE_XTENSOR)
 endif()
 
 # Ajouter l'exécutable
-add_executable(VectorSumBenchmark src/main.cpp)
+add_executable(VectorSumBenchmark src/vector.cpp)
 
 # Lier Google Benchmark à l'exécutable
 target_link_libraries(VectorSumBenchmark benchmark::benchmark)
