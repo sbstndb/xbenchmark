@@ -9,10 +9,14 @@
 #endif
 
 
-template <typename T>
+// Note : I cant just use Operations like std::plus<> to reduce code size because I can't 
+// achieve to use it with XTensor in limited time.
+// So I decided to badly duplicate code for now ...
+
+template <typename T, typename Op>
 void BM_RawSum(benchmark::State& state) {
     const int vector_size = state.range(0);  // Vector size defined by benchmark range
-
+    Op operation ; 
     for (auto _ : state) {
         T* vec1 = static_cast<T*>(std::malloc(vector_size * sizeof(T)));
         T* vec2 = static_cast<T*>(std::malloc(vector_size * sizeof(T)));
@@ -24,9 +28,9 @@ void BM_RawSum(benchmark::State& state) {
             vec2[i] = 2;
         }
 
-	// compute loop
+        // compute loop
         for (int i = 0; i < vector_size; ++i) {
-            result[i] = vec1[i] + vec2[i];
+                result[i] = operation(vec1[i] , vec2[i]) ;
         }
 
         benchmark::DoNotOptimize(result); // compiler artifice 
@@ -40,9 +44,10 @@ void BM_RawSum(benchmark::State& state) {
     state.SetItemsProcessed(state.iterations() * vector_size);
 }
 
-template <typename T>
+template <typename T, typename Op>
 void BM_AlignedAllocSum(benchmark::State& state) {
     const int vector_size = state.range(0);
+    Op operation ; 
     constexpr std::size_t alignment = 64; 
 
     for (auto _ : state) {
@@ -63,9 +68,9 @@ void BM_AlignedAllocSum(benchmark::State& state) {
             vec2[i] = 2;
         }
 
-        // Perform the addition
+        // compute loop
         for (int i = 0; i < vector_size; ++i) {
-            result[i] = vec1[i] + vec2[i];
+                result[i] = operation(vec1[i] , vec2[i]) ;
         }
 
         benchmark::DoNotOptimize(result); // Prevent compiler optimizations
@@ -80,10 +85,10 @@ void BM_AlignedAllocSum(benchmark::State& state) {
 }
 
 
-template <typename T>
+template <typename T, typename Op>
 void BM_VectorSum(benchmark::State& state) {
     const int vector_size = state.range(0);  // Vector size defined by benchmark range
-
+    Op operation;
     for (auto _ : state) {
         std::vector<T> vec1(vector_size, 1);
         std::vector<T> vec2(vector_size, 2);
@@ -91,9 +96,8 @@ void BM_VectorSum(benchmark::State& state) {
 
         // compute loop
         for (int i = 0; i < vector_size; ++i) {
-            result[i] = vec1[i] + vec2[i];
-        }
-
+		result[i] = operation(vec1[i] , vec2[i]) ; 
+	}
         benchmark::DoNotOptimize(result); // compiler artifice 
     }
 
@@ -102,7 +106,7 @@ void BM_VectorSum(benchmark::State& state) {
 }
 
 #ifdef XBENCHMARK_USE_XTENSOR
-template <typename T>
+template <typename T, typename Op>
 void BM_XArraySum(benchmark::State& state) {
     const int vector_size = state.range(0);
     for (auto _ : state) {
@@ -113,7 +117,16 @@ void BM_XArraySum(benchmark::State& state) {
         vec1.fill(1);
         vec2.fill(2);
 
-        xt::noalias(result) = vec1 + vec2;
+	// lot of constexpr because of xtensor itself
+	if constexpr(std::is_same_v<Op, std::plus<T>>){
+	        xt::noalias(result) = vec1 + vec2;
+	} else if constexpr(std::is_same_v<Op, std::minus<T>>){
+                xt::noalias(result) = vec1 + vec2;
+	} else if constexpr(std::is_same_v<Op, std::multiplies<T>>){
+                xt::noalias(result) = vec1 + vec2;
+	} else if constexpr(std::is_same_v<Op, std::divides<T>>){
+                xt::noalias(result) = vec1 + vec2;
+	}
 
         benchmark::DoNotOptimize(result.data());
     }
@@ -122,7 +135,7 @@ void BM_XArraySum(benchmark::State& state) {
 #endif
 
 #ifdef XBENCHMARK_USE_XTENSOR
-template <typename T>
+template <typename T, typename Op>
 void BM_XTensorSum(benchmark::State& state) {
     const int vector_size = state.range(0);
     for (auto _ : state) {
@@ -133,7 +146,17 @@ void BM_XTensorSum(benchmark::State& state) {
         vec1.fill(1);
         vec2.fill(2);
 
-        xt::noalias(result) = vec1 + vec2;
+	// lots of constexpr becaus of xtensor itself
+        if constexpr(std::is_same_v<Op, std::plus<T>>){
+                xt::noalias(result) = vec1 + vec2;
+        } else if constexpr(std::is_same_v<Op, std::minus<T>>){
+                xt::noalias(result) = vec1 + vec2;
+        } else if constexpr(std::is_same_v<Op, std::multiplies<T>>){
+                xt::noalias(result) = vec1 + vec2;
+        } else if constexpr(std::is_same_v<Op, std::divides<T>>){
+                xt::noalias(result) = vec1 + vec2;
+        }
+
 
         benchmark::DoNotOptimize(result.data());
     }
@@ -161,23 +184,23 @@ void BM_XTensorFixedSum(benchmark::State& state) {
 
 
 // Power of two rule
-BENCHMARK_TEMPLATE(BM_RawSum, int32_t)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
-BENCHMARK_TEMPLATE(BM_RawSum, float)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
+BENCHMARK_TEMPLATE(BM_RawSum, int32_t, std::plus<int32_t>)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
+BENCHMARK_TEMPLATE(BM_RawSum, float, std::plus<float>)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
 
-BENCHMARK_TEMPLATE(BM_AlignedAllocSum, int32_t)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
-BENCHMARK_TEMPLATE(BM_AlignedAllocSum, float)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
+BENCHMARK_TEMPLATE(BM_AlignedAllocSum, int32_t, std::plus<int32_t>)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
+BENCHMARK_TEMPLATE(BM_AlignedAllocSum, float, std::plus<float>)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
 
-BENCHMARK_TEMPLATE(BM_VectorSum, int32_t)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
-BENCHMARK_TEMPLATE(BM_VectorSum, float)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
+BENCHMARK_TEMPLATE(BM_VectorSum, int32_t, std::plus<int32_t>)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
+BENCHMARK_TEMPLATE(BM_VectorSum, float, std::plus<float>)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
 
 
 #ifdef XBENCHMARK_USE_XTENSOR
-BENCHMARK_TEMPLATE(BM_XArraySum, int32_t)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
-BENCHMARK_TEMPLATE(BM_XArraySum, float)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
+BENCHMARK_TEMPLATE(BM_XArraySum, int32_t, std::plus<int32_t>)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
+BENCHMARK_TEMPLATE(BM_XArraySum, float, std::plus<float>)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
 
 
-BENCHMARK_TEMPLATE(BM_XTensorSum, int32_t)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
-BENCHMARK_TEMPLATE(BM_XTensorSum, float)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
+BENCHMARK_TEMPLATE(BM_XTensorSum, int32_t, std::plus<int32_t>)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
+BENCHMARK_TEMPLATE(BM_XTensorSum, float, std::plus<float>)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
 #endif
 
 
