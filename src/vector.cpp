@@ -8,9 +8,9 @@
 #include <xtensor/xnoalias.hpp>
 #endif
 
-const int MS = 1 ; // Min_size of arrays
-const int RM = 2 ; /// RangeMultiplier
-const int PS = 25 ; // pow size
+const int MS = 8 ; // Min_size of arrays
+const int RM = 128 ; /// RangeMultiplier
+const int PS = 22 ; // pow size
 
 
 // Note : I cant just use Operations like std::plus<> to reduce code size because I can't 
@@ -125,11 +125,11 @@ void BM_XArraySum(benchmark::State& state) {
 	if constexpr(std::is_same_v<Op, std::plus<T>>){
 	        xt::noalias(result) = vec1 + vec2;
 	} else if constexpr(std::is_same_v<Op, std::minus<T>>){
-                xt::noalias(result) = vec1 + vec2;
+                xt::noalias(result) = vec1 - vec2;
 	} else if constexpr(std::is_same_v<Op, std::multiplies<T>>){
-                xt::noalias(result) = vec1 + vec2;
+                xt::noalias(result) = vec1 * vec2;
 	} else if constexpr(std::is_same_v<Op, std::divides<T>>){
-                xt::noalias(result) = vec1 + vec2;
+                xt::noalias(result) = vec1 / vec2;
 	}
 
         benchmark::DoNotOptimize(result.data());
@@ -154,11 +154,11 @@ void BM_XTensorSum(benchmark::State& state) {
         if constexpr(std::is_same_v<Op, std::plus<T>>){
                 xt::noalias(result) = vec1 + vec2;
         } else if constexpr(std::is_same_v<Op, std::minus<T>>){
-                xt::noalias(result) = vec1 + vec2;
+                xt::noalias(result) = vec1 - vec2;
         } else if constexpr(std::is_same_v<Op, std::multiplies<T>>){
-                xt::noalias(result) = vec1 + vec2;
+                xt::noalias(result) = vec1 * vec2;
         } else if constexpr(std::is_same_v<Op, std::divides<T>>){
-                xt::noalias(result) = vec1 + vec2;
+                xt::noalias(result) = vec1 / vec2;
         }
 
 
@@ -196,8 +196,8 @@ BENCHMARK_TEMPLATE(BM_RawSum, float,	std::multiplies<float>)->RangeMultiplier(RM
 BENCHMARK_TEMPLATE(BM_RawSum, float,	std::divides<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 
 BENCHMARK_TEMPLATE(BM_AlignedAllocSum, int32_t,	std::plus<	int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_AlignedAllocSum, int32_t,	std::divides<	int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(BM_AlignedAllocSum, int32_t,	std::multiplies<int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_AlignedAllocSum, int32_t,	std::divides<	int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(BM_AlignedAllocSum, float,	std::plus<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(BM_AlignedAllocSum, float,	std::multiplies<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(BM_AlignedAllocSum, float,	std::divides<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
