@@ -1,6 +1,14 @@
 #include <benchmark/benchmark.h>
 #include <vector>
 
+#ifdef XBENCHMARK_USE_XTENSOR
+#include <xtensor/xarray.hpp>
+#include <xtensor/xtensor.hpp>
+#include <xtensor/xfixed.hpp>
+#include <xtensor/xnoalias.hpp>
+#endif
+
+
 void BM_RawSum(benchmark::State& state) {
     const int vector_size = state.range(0);  // Vector size defined by benchmark range
 
@@ -90,11 +98,100 @@ void BM_VectorSum(benchmark::State& state) {
     state.SetItemsProcessed(state.iterations() * vector_size);
 }
 
+#ifdef XBENCHMARK_USE_XTENSOR
+void BM_XArraySum(benchmark::State& state) {
+    const int vector_size = state.range(0);
+    for (auto _ : state) {
+        xt::xarray<int> vec1 = xt::xarray<int>::from_shape({vector_size});
+        xt::xarray<int> vec2 = xt::xarray<int>::from_shape({vector_size});
+        xt::xarray<int> result = xt::xarray<int>::from_shape({vector_size});
+
+        vec1.fill(1);
+        vec2.fill(2);
+
+        xt::noalias(result) = vec1 + vec2;
+
+        benchmark::DoNotOptimize(result.data());
+    }
+    state.SetItemsProcessed(state.iterations() * vector_size);
+}
+#endif
+
+#ifdef XBENCHMARK_USE_XTENSOR
+void BM_XTensorSum(benchmark::State& state) {
+    const int vector_size = state.range(0);
+    for (auto _ : state) {
+        xt::xtensor<int, 1> vec1   = xt::xtensor<int,1>::from_shape({vector_size});
+        xt::xtensor<int, 1> vec2   = xt::xtensor<int,1>::from_shape({vector_size});
+        xt::xtensor<int, 1> result = xt::xtensor<int,1>::from_shape({vector_size});
+
+        vec1.fill(1);
+        vec2.fill(2);
+
+        xt::noalias(result) = vec1 + vec2;
+
+        benchmark::DoNotOptimize(result.data());
+    }
+    state.SetItemsProcessed(state.iterations() * vector_size);
+}
+#endif
+
+#ifdef XBENCHMARK_USE_XTENSOR
+template <std::size_t T>
+void BM_XTensorFixedSum(benchmark::State& state) {
+    for (auto _ : state) {
+        xt::xtensor_fixed<int, xt::xshape<T>> vec1 ; 
+        xt::xtensor_fixed<int, xt::xshape<T>> vec2 ;
+        xt::xtensor_fixed<int, xt::xshape<T>> result;
+
+        vec1.fill(1);
+        vec2.fill(2);
+
+        xt::noalias(result) = vec1 + vec2;
+        benchmark::DoNotOptimize(result.data());
+    }
+    state.SetItemsProcessed(state.iterations() * T);
+}
+#endif
+
 
 // Power of two rule
 BENCHMARK(BM_RawSum)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
 BENCHMARK(BM_AlignedAllocSum)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
 BENCHMARK(BM_VectorSum)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
+
+#ifdef XBENCHMARK_USE_XTENSOR
+BENCHMARK(BM_XArraySum)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
+BENCHMARK(BM_XTensorSum)->RangeMultiplier(2)->Range(1 << 0, 1 << 24);
+BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 8);
+BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 2);
+BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 4);
+BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 8);
+BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 16);
+BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 32);
+BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 64);
+BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 128);
+BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 256);
+BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 512);
+BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 1024);
+BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 2048);
+BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 4096);
+BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 8192);
+BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 16384);
+BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 32768);
+BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 65536);
+//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 131072);
+//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 262144);
+//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 524288);
+//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 1048576);
+//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 2097152);
+//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 4194304);
+//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 8388608);
+//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 16777216);
+#endif
+
+
+
 BENCHMARK_MAIN();
 
 
