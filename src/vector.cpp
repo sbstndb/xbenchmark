@@ -9,9 +9,9 @@
 #include <xtensor/xeval.hpp>
 #endif
 
-const int MS = 8 ; // Min_size of arrays
+const int MS = 1024 ; // Min_size of arrays
 const int RM = 128 ; /// RangeMultiplier
-const int PS = 22 ; // pow size
+const int PS = 21 ; // pow size
 
 
 // Note : I cant just use Operations like std::plus<> to reduce code size because I can't 
@@ -76,6 +76,7 @@ void BM_AlignedAllocSum(benchmark::State& state) {
         // compute loop
         for (int i = 0; i < vector_size; ++i) {
                 result[i] = operation(vec1[i] , vec2[i]) ;
+
         }
 
         benchmark::DoNotOptimize(result); // Prevent compiler optimizations
