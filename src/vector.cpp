@@ -6,6 +6,7 @@
 #include <xtensor/xtensor.hpp>
 #include <xtensor/xfixed.hpp>
 #include <xtensor/xnoalias.hpp>
+#include <xtensor/xeval.hpp>
 #endif
 
 const int MS = 8 ; // Min_size of arrays
@@ -169,6 +170,38 @@ void BM_XTensorSum(benchmark::State& state) {
 #endif
 
 #ifdef XBENCHMARK_USE_XTENSOR
+template <typename T, typename Op>
+void BM_XTensorSumEval(benchmark::State& state) {
+    const int vector_size = state.range(0);
+    for (auto _ : state) {
+        xt::xtensor<T, 1> vec1   = xt::xtensor<T,1>::from_shape({vector_size});
+        xt::xtensor<T, 1> vec2   = xt::xtensor<T,1>::from_shape({vector_size});
+        xt::xtensor<T, 1> result = xt::xtensor<T,1>::from_shape({vector_size});
+
+        vec1.fill(1);
+        vec2.fill(2);
+
+        // lots of constexpr becaus of xtensor itself
+        if constexpr(std::is_same_v<Op, std::plus<T>>){
+                xt::noalias(result) = xt::eval(vec1 + vec2);
+        } else if constexpr(std::is_same_v<Op, std::minus<T>>){
+                xt::noalias(result) = xt::eval(vec1 - vec2);
+        } else if constexpr(std::is_same_v<Op, std::multiplies<T>>){
+                xt::noalias(result) = xt::eval(vec1 * vec2);
+        } else if constexpr(std::is_same_v<Op, std::divides<T>>){
+                xt::noalias(result) = xt::eval(vec1 / vec2);
+        }
+
+
+        benchmark::DoNotOptimize(result.data());
+    }
+    state.SetItemsProcessed(state.iterations() * vector_size);
+}
+#endif
+
+
+
+#ifdef XBENCHMARK_USE_XTENSOR
 template <std::size_t S>
 void BM_XTensorFixedSum(benchmark::State& state) {
     for (auto _ : state) {
@@ -223,6 +256,14 @@ BENCHMARK_TEMPLATE(BM_XTensorSum, int32_t,	std::divides<	int32_t>)->RangeMultipl
 BENCHMARK_TEMPLATE(BM_XTensorSum, float,	std::plus<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(BM_XTensorSum, float,	std::multiplies<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(BM_XTensorSum, float,	std::divides<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+
+
+BENCHMARK_TEMPLATE(BM_XTensorSumEval, int32_t,      std::plus<      int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_XTensorSumEval, int32_t,      std::multiplies<int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_XTensorSumEval, int32_t,      std::divides<   int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_XTensorSumEval, float,        std::plus<      float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_XTensorSumEval, float,        std::multiplies<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_XTensorSumEval, float,        std::divides<   float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 
 #endif
 
