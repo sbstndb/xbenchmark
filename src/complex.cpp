@@ -223,6 +223,62 @@ void BM_XTensorSumEval(benchmark::State& state) {
 }
 #endif
 
+#ifdef XBENCHMARK_USE_XTENSOR
+template <typename T, typename Op>
+void BM_XTensorSumAutoEval(benchmark::State& state) {
+    const int vector_size = state.range(0);
+    T a = static_cast<T>(2.0) ;
+    xt::xtensor<T, 1> vec1   = xt::xtensor<T,1>::from_shape({vector_size});
+    xt::xtensor<T, 1> vec2   = xt::xtensor<T,1>::from_shape({vector_size});
+    xt::xtensor<T, 1> vec3   = xt::xtensor<T,1>::from_shape({vector_size});
+    xt::xtensor<T, 1> vec4   = xt::xtensor<T,1>::from_shape({vector_size});
+    xt::xtensor<T, 1> result = xt::xtensor<T,1>::from_shape({vector_size});
+    vec1.fill(1);
+    vec2.fill(2);
+    vec3.fill(3) ;
+    vec4.fill(4) ;
+    result.fill(0);
+    for (auto _ : state) {
+
+        if constexpr(std::is_same_v<Op, complex_op<T>>){
+                auto eval = xt::eval(a * vec1 + vec2 * vec3 * vec4);
+		xt::noalias(result) = eval ; 
+        }
+
+        benchmark::DoNotOptimize(result.data());
+    }
+    state.SetItemsProcessed(state.iterations() * vector_size);
+}
+#endif
+
+
+#ifdef XBENCHMARK_USE_XTENSOR
+template <typename T, typename Op>
+void BM_XTensorSumOnlyAutoEval(benchmark::State& state) {
+    const int vector_size = state.range(0);
+    T a = static_cast<T>(2.0) ;
+    xt::xtensor<T, 1> vec1   = xt::xtensor<T,1>::from_shape({vector_size});
+    xt::xtensor<T, 1> vec2   = xt::xtensor<T,1>::from_shape({vector_size});
+    xt::xtensor<T, 1> vec3   = xt::xtensor<T,1>::from_shape({vector_size});
+    xt::xtensor<T, 1> vec4   = xt::xtensor<T,1>::from_shape({vector_size});
+    xt::xtensor<T, 1> result = xt::xtensor<T,1>::from_shape({vector_size});
+    vec1.fill(1);
+    vec2.fill(2);
+    vec3.fill(3) ;
+    vec4.fill(4) ;
+    result.fill(0);
+    for (auto _ : state) {
+
+        if constexpr(std::is_same_v<Op, complex_op<T>>){
+                auto eval = xt::eval(a * vec1 + vec2 * vec3 * vec4);
+        }
+
+//        benchmark::DoNotOptimize(eval);
+    }
+    state.SetItemsProcessed(state.iterations() * vector_size);
+}
+#endif
+
 
 
 // Power of two rule
@@ -244,6 +300,14 @@ BENCHMARK_TEMPLATE(BM_XTensorSum, float,	complex_op<	float>)->RangeMultiplier(RM
 
 BENCHMARK_TEMPLATE(BM_XTensorSumEval, int32_t,      complex_op<      int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(BM_XTensorSumEval, float,        complex_op<      float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+
+BENCHMARK_TEMPLATE(BM_XTensorSumAutoEval, int32_t,      complex_op<      int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_XTensorSumAutoEval, float,        complex_op<      float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+
+BENCHMARK_TEMPLATE(BM_XTensorSumOnlyAutoEval, int32_t,      complex_op<      int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_XTensorSumOnlyAutoEval, float,        complex_op<      float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+
+
 #endif
 
 
