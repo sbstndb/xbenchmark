@@ -73,6 +73,43 @@ void BM_AlignedAllocSum(benchmark::State& state) {
     state.SetItemsProcessed(state.iterations() * vector_size);
 }
 
+template <typename T>
+void BM_AlignedAllocMaskedSum(benchmark::State& state) {
+    const int vector_size = state.range(0);
+
+    constexpr std::size_t alignment = 64;
+
+    // Allocate aligned memory using std::aligned_alloc
+    T* vec1 = static_cast<T*>(std::aligned_alloc(alignment, vector_size * sizeof(T)));
+    T* vec2 = static_cast<T*>(std::aligned_alloc(alignment, vector_size * sizeof(T)));
+    T* result = static_cast<T*>(std::aligned_alloc(alignment, vector_size * sizeof(T)));
+    bool* mask = static_cast<bool*>(std::aligned_alloc(alignment, vector_size * sizeof(bool))) ; 
+    // Initialize arrays
+    for (int i = 0; i < vector_size; ++i) {
+        vec1[i] = 1;
+        vec2[i] = 2;
+        result[i] = 0 ;
+	mask[i] = 1 ; 
+    }
+    for (auto _ : state) {
+        // compute loop
+        for (int i = 0; i < vector_size; ++i) {
+		if (mask[i] == true)   
+			result[i] =  vec1[i] + vec2[i] ;
+        }
+        benchmark::DoNotOptimize(result); // Prevent compiler optimizations
+    }
+    // Free aligned memory
+    std::free(vec1);
+    std::free(vec2);
+    std::free(result);
+    std::free(mask);
+    state.SetItemsProcessed(state.iterations() * vector_size);
+}
+
+
+
+
 #ifdef XBENCHMARK_USE_XTENSOR
 template <typename T>
 void BM_XArrayViewSum(benchmark::State& state) {
@@ -165,6 +202,7 @@ void BM_XTensorStridedViewAllRangeSum(benchmark::State& state) {
 
 
 #ifdef XBENCHMARK_USE_XTENSOR
+// Observation : very slow !  We should try with raw pointers to compare potential performances. 
 template <typename T>
 void BM_XTensorMaskedViewAllSum(benchmark::State& state) {
     const int vector_size = state.range(0);
@@ -191,10 +229,12 @@ void BM_XTensorMaskedViewAllSum(benchmark::State& state) {
 
 
 
+
 // Power of two rule
 //
 BENCHMARK_TEMPLATE(BM_RawSum, float     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(BM_AlignedAllocSum, float     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_AlignedAllocMaskedSum, float     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(BM_XArrayViewSum, float	)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(BM_XTensorViewSum, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(BM_XTensorStridedViewAllSum, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
