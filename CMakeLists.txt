@@ -16,6 +16,11 @@ if(XBENCHMARK_USE_XTENSOR)
 	add_compile_definitions(XBENCHMARK_USE_XTENSOR)
 endif()
 
+if(XBENCHMARK_USE_IMMINTRIN)
+	add_compile_definitions(XBENCHMARK_USE_IMMINTRIN)
+endif()
+
+
 # Ajouter l'exécutable
 add_executable(VectorSumBenchmark src/vector.cpp)
 add_executable(VectorFmaBenchmark src/fma.cpp)

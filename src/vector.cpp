@@ -181,6 +181,7 @@ void BM_XTensorSumEval(benchmark::State& state) {
 
         vec1.fill(1);
         vec2.fill(2);
+	result.fill(0);
 
         // lots of constexpr becaus of xtensor itself
         if constexpr(std::is_same_v<Op, std::plus<T>>){

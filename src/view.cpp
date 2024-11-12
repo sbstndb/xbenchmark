@@ -13,6 +13,10 @@
 #include <xtensor/xmasked_view.hpp>
 #endif
 
+#ifdef XBENCHMARK_USE_IMMINTRIN
+#include <immintrin.h>
+#endif
+
 const int MS = 1024 ; // Min_size of arrays
 const int RM = 128 ; /// RangeMultiplier
 const int PS = 21 ; // pow size
@@ -94,9 +98,11 @@ void BM_AlignedAllocMaskedSum(benchmark::State& state) {
     for (auto _ : state) {
         // compute loop
         for (int i = 0; i < vector_size; ++i) {
-		if (mask[i] == true)   
-			result[i] =  vec1[i] + vec2[i] ;
-        }
+            result[i] = (mask[i] == true) ? (vec1[i] + vec2[i]) : result[i] ;
+//		if (mask[i] == true)   
+//			result[i] = vec1[i] + vec2[i] ; 
+//
+      }
         benchmark::DoNotOptimize(result); // Prevent compiler optimizations
     }
     // Free aligned memory
@@ -107,6 +113,10 @@ void BM_AlignedAllocMaskedSum(benchmark::State& state) {
     state.SetItemsProcessed(state.iterations() * vector_size);
 }
 
+#ifdef XBENCHMARK_USE_IMMINTRIN
+// TODO : optimize this kernel : we want this to compile into avx mask instructions
+// !!! T should be float in this experimental case
+#endif
 
 
 
@@ -228,6 +238,55 @@ void BM_XTensorMaskedViewAllSum(benchmark::State& state) {
 #endif
 
 
+#ifdef XBENCHMARK_USE_XTENSOR
+// Observation : very slow !  We should try with raw pointers to compare potential performances. 
+template <typename T>
+void BM_XTensorMaskedViewAllSum2(benchmark::State& state) {
+    const int vector_size = state.range(0);
+    xt::xtensor<T, 1> vec1 = xt::xtensor<T, 1>::from_shape({vector_size});
+    xt::xtensor<T, 1> vec2 = xt::xtensor<T, 1>::from_shape({vector_size});
+    xt::xtensor<T, 1> result = xt::xtensor<T, 1>::from_shape({vector_size});
+    vec1.fill(1) ;
+    vec2.fill(2) ;
+    result.fill(0) ;
+
+    xt::xtensor<bool,1> mask = xt::xtensor<bool, 1>::from_shape({vector_size});
+    mask.fill(1);
+    // define mask 
+    for (auto _ : state) {
+	    xt::masked_view(result, mask) = vec1 + vec2;
+
+        benchmark::DoNotOptimize(result.data());
+    }
+    state.SetItemsProcessed(state.iterations() * vector_size);
+}
+#endif
+
+#ifdef XBENCHMARK_USE_XTENSOR
+// Observation : very slow !  We should try with raw pointers to compare potential performances. 
+template <typename T>
+void BM_XTensorRawMaskedViewAllSum(benchmark::State& state) {
+    const int vector_size = state.range(0);
+    xt::xtensor<T, 1> vec1 = xt::xtensor<T, 1>::from_shape({vector_size});
+    xt::xtensor<T, 1> vec2 = xt::xtensor<T, 1>::from_shape({vector_size});
+    xt::xtensor<T, 1> result = xt::xtensor<T, 1>::from_shape({vector_size});
+    vec1.fill(1) ;
+    vec2.fill(2) ;
+    result.fill(0) ;
+
+    xt::xtensor<bool,1> mask = xt::xtensor<bool, 1>::from_shape({vector_size});
+    mask.fill(1);
+    // define mask 
+    for (auto _ : state) {
+	    for (int i = 0 ; i < vector_size; i++){
+		result[i] = (mask[i] == true) ? (vec1[i] + vec2[i]) : result[i] ;
+	    }
+        benchmark::DoNotOptimize(result.data());
+    }
+    state.SetItemsProcessed(state.iterations() * vector_size);
+}
+#endif
+
 
 
 // Power of two rule
@@ -235,12 +294,19 @@ void BM_XTensorMaskedViewAllSum(benchmark::State& state) {
 BENCHMARK_TEMPLATE(BM_RawSum, float     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(BM_AlignedAllocSum, float     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(BM_AlignedAllocMaskedSum, float     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+#ifdef XBENCHMARK_USE_IMMINTRIN
+#endif
+#ifdef XBENCHMARK_USE_XTENSOR
 BENCHMARK_TEMPLATE(BM_XArrayViewSum, float	)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(BM_XTensorViewSum, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(BM_XTensorStridedViewAllSum, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(BM_XTensorStridedViewAllRangeSum, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(BM_XTensorMaskedViewAllSum, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_XTensorMaskedViewAllSum2, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_XTensorRawMaskedViewAllSum, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 
+
+#endif
 
 
 BENCHMARK_MAIN();
