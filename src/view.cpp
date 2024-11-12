@@ -174,11 +174,14 @@ void BM_XTensorMaskedViewAllSum(benchmark::State& state) {
     vec1.fill(1) ;
     vec2.fill(2) ;
     result.fill(0) ;
+
+    xt::xtensor<bool,1> mask = xt::xtensor<bool, 1>::from_shape({vector_size});
+    mask.fill(1);
     // define mask 
     for (auto _ : state) {
-//        auto view1 = xt::masked_view(vec1, mask) ;
-//        auto view2 = xt::masked_view(vec2, mask) ;
-//        xt::noalias(result) = vec1 + vec2;
+        auto view1 = xt::masked_view(vec1, mask) ;
+        auto view2 = xt::masked_view(vec2, mask) ;
+        xt::noalias(result) = xt::eval(view1) + xt::eval(view2);
 
         benchmark::DoNotOptimize(result.data());
     }
