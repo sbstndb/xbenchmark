@@ -88,6 +88,33 @@ void BM_NoExitLinearFind(benchmark::State& state) {
 
 
 template <typename T>
+void BM_StdFind(benchmark::State& state) {
+    const int vector_size = state.range(0);
+    std::vector<T> array(vector_size);
+    // randomisation du vecteur
+    // Remplir le tableau avec des valeurs aléatoires et le trier
+    std::generate(array.begin(), array.end(), []() { return rand() % 10000; });
+    std::sort(array.begin(), array.end());
+
+    int mid_index = get_mid_index(vector_size);
+    int target = array[mid_index] ; // we want to iterate on one half of the vector to be fair :-)
+
+
+    int index = - 1 ;
+    for (auto _ : state) {
+        index = -1 ;
+
+        auto it = std::find(array.begin(), array.end(), target);
+        if (it != array.end() && *it == target) {	
+            index = std::distance(array.begin(), it);
+        }
+        benchmark::DoNotOptimize(index); // Prevent compiler optimizations
+    }
+    state.SetItemsProcessed(state.iterations() * vector_size);
+}
+
+
+template <typename T>
 void BM_LowerBoundFind(benchmark::State& state) {
     const int vector_size = state.range(0);
     std::vector<T> array(vector_size);
@@ -126,6 +153,7 @@ void BM_LowerBoundFind(benchmark::State& state) {
 //
 BENCHMARK_TEMPLATE(BM_NaiveLinearFind, uint32_t     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(BM_NoExitLinearFind, uint32_t     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_StdFind, int32_t     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(BM_LowerBoundFind, uint32_t     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 
 
