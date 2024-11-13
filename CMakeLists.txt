@@ -27,6 +27,7 @@ add_executable(VectorFmaBenchmark src/fma.cpp)
 add_executable(VectorComplexBenchmark src/complex.cpp)
 add_executable(ViewBenchmark src/view_all.cpp)
 add_executable(ViewStrideBenchmark src/view_stride.cpp)
+add_executable(FindBenchmark src/find.cpp)
 
 
 
@@ -36,6 +37,8 @@ target_link_libraries(VectorFmaBenchmark benchmark::benchmark)
 target_link_libraries(VectorComplexBenchmark benchmark::benchmark)
 target_link_libraries(ViewBenchmark benchmark::benchmark)
 target_link_libraries(ViewStrideBenchmark benchmark::benchmark)
+target_link_libraries(FindBenchmark benchmark::benchmark)
+
 
 
 if (XBENCHMARK_USE_XTENSOR)
@@ -44,6 +47,7 @@ if (XBENCHMARK_USE_XTENSOR)
 	target_link_libraries(VectorComplexBenchmark xtensor xtensor::use_xsimd xtensor::optimize)
         target_link_libraries(ViewBenchmark xtensor xtensor::use_xsimd xtensor::optimize)
 	target_link_libraries(ViewStrideBenchmark xtensor xtensor::use_xsimd xtensor::optimize)
+	target_link_libraries(FindBenchmark xtensor xtensor::use_xsimd xtensor::optimize)
 
 
 
@@ -55,6 +59,7 @@ target_compile_options(VectorFmaBenchmark PRIVATE -O3 -mavx2 -mfma -march=native
 target_compile_options(VectorComplexBenchmark PRIVATE -O3 -mavx2 -mfma -march=native -mtune=native)
 target_compile_options(ViewBenchmark PRIVATE -O3 -mavx2 -mfma -march=native -mtune=native)
 target_compile_options(ViewStrideBenchmark PRIVATE -O3 -mavx2 -mfma -march=native -mtune=native)
+target_compile_options(FindBenchmark PRIVATE -O3 -mavx2 -mfma -march=native -mtune=native)
 
 
 
