@@ -26,7 +26,7 @@ const int stride = 4 ;
 
 
 int get_mid_index(int vector_size){
-	return static_cast<int>(vector_size/2);
+	return static_cast<int>(vector_size/2)- 1;
 }
 
 template <typename T>
