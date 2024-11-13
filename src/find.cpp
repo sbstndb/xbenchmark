@@ -124,9 +124,9 @@ void BM_LowerBoundFind(benchmark::State& state) {
 
 // Power of two rule
 //
-BENCHMARK_TEMPLATE(BM_NaiveLinearFind, int     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_NoExitLinearFind, int     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_LowerBoundFind, int     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_NaiveLinearFind, uint32_t     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_NoExitLinearFind, uint32_t     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BM_LowerBoundFind, uint32_t     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 
 
 
