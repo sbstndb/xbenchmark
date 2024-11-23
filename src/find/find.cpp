@@ -10,6 +10,7 @@ const int RM = 2 ; /// RangeMultiplier
 const int PS = 12 ; // pow size
 
 
+
 void FIND_naive(benchmark::State& state){
         const int size = state.range(0) ;
         int* vector = (int*) malloc(sizeof(int) * size) ;
@@ -17,7 +18,7 @@ void FIND_naive(benchmark::State& state){
         init_vector(vector, size, value, size-1);
         int index ;
         for (auto _ : state){
-                index = find_naive(vector, size, value);
+		index = find_naive(vector, size, value);
                 benchmark::DoNotOptimize(index);
         }
         state.SetItemsProcessed(state.iterations() * size);
