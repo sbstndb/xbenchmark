@@ -17,7 +17,7 @@ if(XBENCHMARK_USE_XTENSOR)
 endif()
 
 if(XBENCHMARK_USE_IMMINTRIN)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXS_FLAGS} -mavx2")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 	add_compile_definitions(XBENCHMARK_USE_IMMINTRIN)
 endif()
 
@@ -30,6 +30,7 @@ endif()
 
 include_directories(include)
 add_subdirectory(src)
+
 
 
 # Ajouter l'exécutable
