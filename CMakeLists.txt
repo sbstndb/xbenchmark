@@ -1,15 +1,15 @@
 cmake_minimum_required(VERSION 3.28)
 
-# Nom du projet
-project(XtensorBenchmarks)
+project(XBenchmarks)
 
-# Exige une version de C++ standard (au moins C++11 pour Google Benchmark)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Chercher Google Benchmark installé sur le système
-#find_package(xtensor REQUIRED)
+
 find_package(benchmark REQUIRED)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mtune=native -march=native -mavx2 -Ofast -funroll-loops -ftree-vectorize -g")
+
 
 if(XBENCHMARK_USE_XTENSOR)
 	find_package(xtensor REQUIRED)
@@ -17,8 +17,19 @@ if(XBENCHMARK_USE_XTENSOR)
 endif()
 
 if(XBENCHMARK_USE_IMMINTRIN)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXS_FLAGS} -mavx2")
 	add_compile_definitions(XBENCHMARK_USE_IMMINTRIN)
 endif()
+
+if(XBENCHMARK_USE_EIGEN)
+	find_package(eigen3)
+	add_compile_definitions(XBENCHMARK_USE_EIGEN)
+endif()
+
+
+
+include_directories(include)
+add_subdirectory(src)
 
 
 # Ajouter l'exécutable
