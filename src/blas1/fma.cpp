@@ -1,5 +1,7 @@
 #include <benchmark/benchmark.h>
 #include <vector>
+#include <math.h>
+
 
 #ifdef XBENCHMARK_USE_XTENSOR
 #include <xtensor/xarray.hpp>
@@ -26,7 +28,7 @@ struct fma_op {
 // So I decided to badly duplicate code for now ...
 
 template <typename T, typename Op>
-void BM_RawSum(benchmark::State& state) {
+void BLAS1_fma_raw(benchmark::State& state) {
     const int vector_size = state.range(0);  // Vector size defined by benchmark range
     Op operation ; 
     T a = static_cast<T>(2.0) ; 
@@ -62,7 +64,7 @@ void BM_RawSum(benchmark::State& state) {
 }
 
 template <typename T, typename Op>
-void BM_AlignedAllocSum(benchmark::State& state) {
+void BLAS1_fma_aligned(benchmark::State& state) {
     const int vector_size = state.range(0);
     Op operation ; 
     T a = static_cast<T>(2.0) ;
@@ -104,7 +106,7 @@ void BM_AlignedAllocSum(benchmark::State& state) {
 
 
 template <typename T, typename Op>
-void BM_VectorSum(benchmark::State& state) {
+void BLAS1_fma_std_vector(benchmark::State& state) {
     const int vector_size = state.range(0);  // Vector size defined by benchmark range
     Op operation;
     T a = static_cast<T>(2.0) ;
@@ -127,7 +129,7 @@ void BM_VectorSum(benchmark::State& state) {
 
 #ifdef XBENCHMARK_USE_XTENSOR
 template <typename T, typename Op>
-void BM_XArraySum(benchmark::State& state) {
+void BLAS1_fma_xarray(benchmark::State& state) {
     const int vector_size = state.range(0);
     T a = static_cast<T>(2.0) ;
 
@@ -152,7 +154,7 @@ void BM_XArraySum(benchmark::State& state) {
 
 #ifdef XBENCHMARK_USE_XTENSOR
 template <typename T, typename Op>
-void BM_XTensorSum(benchmark::State& state) {
+void BLAS1_fma_xtensor(benchmark::State& state) {
     const int vector_size = state.range(0);
     T a = static_cast<T>(2.0) ;    
 
@@ -178,7 +180,7 @@ void BM_XTensorSum(benchmark::State& state) {
 
 #ifdef XBENCHMARK_USE_XTENSOR
 template <typename T, typename Op>
-void BM_XTensorSumEval(benchmark::State& state) {
+void BLAS1_fma_xtensor_eval(benchmark::State& state) {
     const int vector_size = state.range(0);
     T a = static_cast<T>(2.0) ;    
     xt::xtensor<T, 1> vec1   = xt::xtensor<T,1>::from_shape({vector_size});
@@ -203,28 +205,14 @@ void BM_XTensorSumEval(benchmark::State& state) {
 
 
 // Power of two rule
-BENCHMARK_TEMPLATE(BM_RawSum, int32_t,	fma_op<	int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_RawSum, float,	fma_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-
-BENCHMARK_TEMPLATE(BM_AlignedAllocSum, int32_t,	fma_op<	int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_AlignedAllocSum, float,	fma_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-
-BENCHMARK_TEMPLATE(BM_VectorSum, int32_t,	fma_op<	int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_VectorSum, float,		fma_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-
+BENCHMARK_TEMPLATE(BLAS1_fma_raw, float,	fma_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BLAS1_fma_aligned, float,	fma_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BLAS1_fma_std_vector, float,		fma_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 #ifdef XBENCHMARK_USE_XTENSOR
-BENCHMARK_TEMPLATE(BM_XArraySum, int32_t,	fma_op<	int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_XArraySum, float, 	fma_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-
-BENCHMARK_TEMPLATE(BM_XTensorSum, int32_t,	fma_op<	int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_XTensorSum, float,	fma_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-
-
-BENCHMARK_TEMPLATE(BM_XTensorSumEval, int32_t,      fma_op<      int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_XTensorSumEval, float,        fma_op<      float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BLAS1_fma_xarray, float, 	fma_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BLAS1_fma_xtensor, float,	fma_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BLAS1_fma_xtensor_eval, float,        fma_op<      float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 #endif
-
-
 BENCHMARK_MAIN();
 
 
