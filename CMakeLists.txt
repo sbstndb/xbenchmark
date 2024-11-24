@@ -39,23 +39,9 @@ add_subdirectory(src)
 
 
 
-# Ajouter l'exécutable
-add_executable(ViewBenchmark src/view_all.cpp)
-add_executable(ViewStrideBenchmark src/view_stride.cpp)
-#add_executable(FindBenchmark src/find.cpp)
-
-
-
-# Lier Google Benchmark à l'exécutable
-target_link_libraries(ViewBenchmark benchmark::benchmark)
-target_link_libraries(ViewStrideBenchmark benchmark::benchmark)
-#target_link_libraries(FindBenchmark benchmark::benchmark)
-
-
-
 if (XBENCHMARK_USE_XTENSOR)
-	target_link_libraries(ViewBenchmark ${GLOBAL_DEPENDANCIES} xtensor xtensor::use_xsimd xtensor::optimize)
-	target_link_libraries(ViewStrideBenchmark ${GLOBAL_DEPENDANCIES} xtensor xtensor::use_xsimd xtensor::optimize)
+	#target_link_libraries(ViewBenchmark ${GLOBAL_DEPENDANCIES} xtensor xtensor::use_xsimd xtensor::optimize)
+	#target_link_libraries(ViewStrideBenchmark ${GLOBAL_DEPENDANCIES} xtensor xtensor::use_xsimd xtensor::optimize)
 	#	target_link_libraries(FindBenchmark ${GLOBAL_DEPENDANCIES} xtensor xtensor::use_xsimd xtensor::optimize)
 
 
@@ -63,8 +49,8 @@ if (XBENCHMARK_USE_XTENSOR)
 endif()
 
 # Optimisation (optionnel) : Ajustez si nécessaire
-target_compile_options(ViewBenchmark PRIVATE -O3 -mavx2 -mfma -march=native -mtune=native)
-target_compile_options(ViewStrideBenchmark PRIVATE -O3 -mavx2 -mfma -march=native -mtune=native)
+#target_compile_options(ViewBenchmark PRIVATE -O3 -mavx2 -mfma -march=native -mtune=native)
+#target_compile_options(ViewStrideBenchmark PRIVATE -O3 -mavx2 -mfma -march=native -mtune=native)
 #target_compile_options(FindBenchmark PRIVATE -O3 -mavx2 -mfma -march=native -mtune=native)
 
 
