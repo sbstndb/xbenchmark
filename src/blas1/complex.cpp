@@ -26,7 +26,7 @@ struct complex_op {
 // So I decided to badly duplicate code for now ...
 
 template <typename T, typename Op>
-void BM_RawSum(benchmark::State& state) {
+void BLAS1_complex_raw(benchmark::State& state) {
     const int vector_size = state.range(0);  // Vector size defined by benchmark range
     Op operation ; 
     T a = static_cast<T>(2.0) ; 
@@ -52,9 +52,7 @@ void BM_RawSum(benchmark::State& state) {
         for (int i = 0; i < vector_size; ++i) {
   	    result[i] = operation(a, vec1[i], vec2[i], vec3[i], vec4[i]) ; 
         }
-
-        benchmark::DoNotOptimize(result); // compiler artifice 
-					  //
+        benchmark::DoNotOptimize(result); 
     }
 
     free(vec1) ;
@@ -68,7 +66,7 @@ void BM_RawSum(benchmark::State& state) {
 }
 
 template <typename T, typename Op>
-void BM_AlignedAllocSum(benchmark::State& state) {
+void BLAS1_complex_aligned(benchmark::State& state) {
     const int vector_size = state.range(0);
     Op operation ; 
     T a = static_cast<T>(2.0) ;
@@ -115,7 +113,7 @@ void BM_AlignedAllocSum(benchmark::State& state) {
 
 
 template <typename T, typename Op>
-void BM_VectorSum(benchmark::State& state) {
+void BLAS1_complex_std_vector(benchmark::State& state) {
     const int vector_size = state.range(0);  // Vector size defined by benchmark range
     Op operation;
     T a = static_cast<T>(2.0) ;
@@ -140,7 +138,7 @@ void BM_VectorSum(benchmark::State& state) {
 
 #ifdef XBENCHMARK_USE_XTENSOR
 template <typename T, typename Op>
-void BM_XArraySum(benchmark::State& state) {
+void BLAS1_complex_xarray(benchmark::State& state) {
     const int vector_size = state.range(0);
     T a = static_cast<T>(2.0) ;
 
@@ -168,7 +166,7 @@ void BM_XArraySum(benchmark::State& state) {
 
 #ifdef XBENCHMARK_USE_XTENSOR
 template <typename T, typename Op>
-void BM_XTensorSum(benchmark::State& state) {
+void BLAS1_complex_xtensor(benchmark::State& state) {
     const int vector_size = state.range(0);
     T a = static_cast<T>(2.0) ;    
 
@@ -198,7 +196,7 @@ void BM_XTensorSum(benchmark::State& state) {
 
 #ifdef XBENCHMARK_USE_XTENSOR
 template <typename T, typename Op>
-void BM_XTensorSumEval(benchmark::State& state) {
+void BLAS1_complex_xtensor_eval(benchmark::State& state) {
     const int vector_size = state.range(0);
     T a = static_cast<T>(2.0) ;    
     xt::xtensor<T, 1> vec1   = xt::xtensor<T,1>::from_shape({vector_size});
@@ -225,7 +223,7 @@ void BM_XTensorSumEval(benchmark::State& state) {
 
 #ifdef XBENCHMARK_USE_XTENSOR
 template <typename T, typename Op>
-void BM_XTensorSumAutoEval(benchmark::State& state) {
+void BLAS1_complex_xtensor_auto_eval(benchmark::State& state) {
     const int vector_size = state.range(0);
     T a = static_cast<T>(2.0) ;
     xt::xtensor<T, 1> vec1   = xt::xtensor<T,1>::from_shape({vector_size});
@@ -254,7 +252,7 @@ void BM_XTensorSumAutoEval(benchmark::State& state) {
 
 #ifdef XBENCHMARK_USE_XTENSOR
 template <typename T, typename Op>
-void BM_XTensorSumOnlyAutoEval(benchmark::State& state) {
+void BLAS1_complex_xtensor_sum_only_auto_eval(benchmark::State& state) {
     const int vector_size = state.range(0);
     T a = static_cast<T>(2.0) ;
     xt::xtensor<T, 1> vec1   = xt::xtensor<T,1>::from_shape({vector_size});
@@ -282,34 +280,16 @@ void BM_XTensorSumOnlyAutoEval(benchmark::State& state) {
 
 
 // Power of two rule
-BENCHMARK_TEMPLATE(BM_RawSum, int32_t,	complex_op<	int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_RawSum, float,	complex_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-
-BENCHMARK_TEMPLATE(BM_AlignedAllocSum, int32_t,	complex_op<	int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_AlignedAllocSum, float,	complex_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-
-BENCHMARK_TEMPLATE(BM_VectorSum, int32_t,	complex_op<	int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_VectorSum, float,		complex_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BLAS1_complex_raw, float,	complex_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BLAS1_complex_aligned, float,	complex_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BLAS1_complex_std_vector, float,		complex_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 #ifdef XBENCHMARK_USE_XTENSOR
-BENCHMARK_TEMPLATE(BM_XArraySum, int32_t,	complex_op<	int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_XArraySum, float, 	complex_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-
-BENCHMARK_TEMPLATE(BM_XTensorSum, int32_t,	complex_op<	int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_XTensorSum, float,	complex_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-
-
-BENCHMARK_TEMPLATE(BM_XTensorSumEval, int32_t,      complex_op<      int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_XTensorSumEval, float,        complex_op<      float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-
-BENCHMARK_TEMPLATE(BM_XTensorSumAutoEval, int32_t,      complex_op<      int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_XTensorSumAutoEval, float,        complex_op<      float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-
-BENCHMARK_TEMPLATE(BM_XTensorSumOnlyAutoEval, int32_t,      complex_op<      int32_t>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BM_XTensorSumOnlyAutoEval, float,        complex_op<      float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-
-
+BENCHMARK_TEMPLATE(BLAS1_complex_xarray, float, 	complex_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BLAS1_complex_xtensor, float,	complex_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BLAS1_complex_xtensor_eval, float,        complex_op<      float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BLAS1_complex_xtensor_auto_eval, float,        complex_op<      float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BLAS1_complex_xtensor_only_auto_eval, float,        complex_op<      float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 #endif
-
 
 BENCHMARK_MAIN();
 
