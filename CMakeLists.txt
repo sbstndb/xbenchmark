@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 find_package(benchmark REQUIRED)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mtune=native -march=native -mavx2 -Ofast -funroll-loops -ftree-vectorize -g")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mtune=native -march=native -mavx2 -O3 -funroll-loops -ftree-vectorize -g")
 
 
 set("GLOBAL_DEPENDENCIES" benchmark::benchmark)

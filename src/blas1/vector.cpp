@@ -1,12 +1,18 @@
 #include <benchmark/benchmark.h>
 #include <vector>
 
+#include <functional>             
+#include <type_traits>           
+
 #ifdef XBENCHMARK_USE_XTENSOR
 #include <xtensor/xarray.hpp>
 #include <xtensor/xtensor.hpp>
 #include <xtensor/xfixed.hpp>
 #include <xtensor/xnoalias.hpp>
 #include <xtensor/xeval.hpp>
+#include <xtensor/xio.hpp>
+#include <xtensor/xoperation.hpp>
+#include <xtensor/xmath.hpp>
 #endif
 
 const int MS = 1024 ; // Min_size of arrays
@@ -89,22 +95,24 @@ void BLAS1_op_std_vector(benchmark::State& state) {
 #ifdef XBENCHMARK_USE_XTENSOR
 template <typename T, typename Op>
 void BLAS1_op_xarray(benchmark::State& state) {
-	const int vector_size = state.range(0);
+	const unsigned long vector_size = static_cast<unsigned long>(state.range(0));
 	xt::xarray<T> vec1 = xt::xarray<T>::from_shape({vector_size});
 	xt::xarray<T> vec2 = xt::xarray<T>::from_shape({vector_size});
 	xt::xarray<T> result = xt::xarray<T>::from_shape({vector_size});
-	vec1.fill(1) ; 
-	vec2.fill(2);
+	//vec1.fill(1.0) ; 
+	//vec2.fill(2.0);
+	vec1 = 1.0 ; 
+	vec2 = 2.0 ; 
 	for (auto _ : state) {
 		// lot of constexpr because of xtensor itself
 		if constexpr(std::is_same_v<Op, std::plus<T>>){
-			xt::noalias(result) = vec1 + vec2;
+			xt::noalias(result) = xt::eval(vec1 + vec2);
 		} else if constexpr(std::is_same_v<Op, std::minus<T>>){
-			xt::noalias(result) = vec1 - vec2;
+			xt::noalias(result) = xt::eval(vec1 - vec2);
 		} else if constexpr(std::is_same_v<Op, std::multiplies<T>>){
-			xt::noalias(result) = vec1 * vec2;
+			xt::noalias(result) = xt::eval(vec1 * vec2);
 		} else if constexpr(std::is_same_v<Op, std::divides<T>>){
-			xt::noalias(result) = vec1 / vec2;
+			xt::noalias(result) = xt::eval(vec1 / vec2);
 		}
 		benchmark::DoNotOptimize(result.data());
 	}
@@ -115,7 +123,7 @@ void BLAS1_op_xarray(benchmark::State& state) {
 #ifdef XBENCHMARK_USE_XTENSOR
 template <typename T, typename Op>
 void BLAS1_op_xtensor(benchmark::State& state) {
-	const int vector_size = state.range(0);
+	const unsigned long vector_size = state.range(0);
 	xt::xtensor<T, 1> vec1   = xt::xtensor<T,1>::from_shape({vector_size});
 	xt::xtensor<T, 1> vec2   = xt::xtensor<T,1>::from_shape({vector_size});
 	xt::xtensor<T, 1> result = xt::xtensor<T,1>::from_shape({vector_size});
@@ -141,7 +149,7 @@ void BLAS1_op_xtensor(benchmark::State& state) {
 #ifdef XBENCHMARK_USE_XTENSOR
 template <typename T, typename Op>
 void BLAS1_op_xtensor_eval(benchmark::State& state) {
-	const int vector_size = state.range(0);
+	const unsigned long vector_size = state.range(0);
 	xt::xtensor<T, 1> vec1   = xt::xtensor<T,1>::from_shape({vector_size});
 	xt::xtensor<T, 1> vec2   = xt::xtensor<T,1>::from_shape({vector_size});
 	xt::xtensor<T, 1> result = xt::xtensor<T,1>::from_shape({vector_size});
