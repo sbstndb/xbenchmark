@@ -15,7 +15,7 @@
 #include <xtensor/xmath.hpp>
 #endif
 
-const int MS = 1024 ; // Min_size of arrays
+const int MS = 4 ; // Min_size of arrays
 const int RM = 128 ; /// RangeMultiplier
 const int PS = 21 ; // pow size
 
@@ -184,10 +184,27 @@ void BLAS1_op_xtensor_fixed(benchmark::State& state) {
 	vec1.fill(1);
 	vec2.fill(2);
 	for (auto _ : state) {
-		xt::noalias(result) = vec1 + vec2;
+		result = vec1 + vec2;
 		benchmark::DoNotOptimize(result.data());
 	}
 	state.SetItemsProcessed(state.iterations() * S);
+}
+#endif
+
+
+#ifdef XBENCHMARK_USE_XTENSOR
+template <std::size_t S>
+void BLAS1_op_xtensor_fixed_noalias(benchmark::State& state) {
+        xt::xtensor_fixed<int, xt::xshape<S>> vec1 ;
+        xt::xtensor_fixed<int, xt::xshape<S>> vec2 ;
+        xt::xtensor_fixed<int, xt::xshape<S>> result;
+        vec1.fill(1);
+        vec2.fill(2);
+        for (auto _ : state) {
+                xt::noalias(result) = vec1 + vec2;
+                benchmark::DoNotOptimize(result.data());
+        }
+        state.SetItemsProcessed(state.iterations() * S);
 }
 #endif
 
@@ -216,36 +233,39 @@ BENCHMARK_TEMPLATE(BLAS1_op_xtensor_eval, float,        std::plus<      float>)-
 #endif
 
 
-/**
+
 // --> Not really dynamic here ...
 #ifdef XBENCHMARK_USE_XTENSOR
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 8);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 2);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 4);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 8);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 16);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 32);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 64);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 128);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 256);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 512);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 1024);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 2048);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 4096);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 8192);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 16384);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 32768);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 65536);
+//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 8);
+//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 2);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 4);
+///BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 8);
+//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 16);
+//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 32);
+//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 64);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 128);
+//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 256);
+//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 512);
+//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 1024);
+//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 2048);
+//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 4096);
+//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 8192);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 16384);
+//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 32768);
+//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 65536);
 //BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 131072);
 //BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 262144);
 //BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 524288);
 //BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 1048576);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 2097152);
+//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 2097152);
 //BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 4194304);
 //BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 8388608);
 //BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 16777216);
+//
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 4);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 128);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 16384);
 #endif
- **/
 
 
 BENCHMARK_MAIN();
