@@ -17,7 +17,7 @@
 #include <immintrin.h>
 #endif
 
-const int MS = 1024 ; // Min_size of arrays
+const int MS = 16 ; // Min_size of arrays
 const int RM = 128 ; /// RangeMultiplier
 const int PS = 21 ; // pow size
 
