@@ -16,7 +16,7 @@ set("GLOBAL_DEPENDENCIES" benchmark::benchmark)
 if(XBENCHMARK_USE_XTENSOR)
 	find_package(xtensor REQUIRED)
 	add_compile_definitions(XBENCHMARK_USE_XTENSOR)
-	list(APPEND GLOBAL_DEPENDENCIES xtensor) #xtensor::use_xsimd xtensor::optimize, voir ce qu'on doit ajouter 
+	list(APPEND GLOBAL_DEPENDENCIES xtensor xtensor::use_xsimd xtensor::optimize)#, voir ce qu'on doit ajouter 
 
 endif()
 

@@ -262,7 +262,7 @@ BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 16384);
 //BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 8388608);
 //BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 16777216);
 //
-BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 4);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 4);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 128);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 16384);
 #endif

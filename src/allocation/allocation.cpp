@@ -15,7 +15,7 @@
 #include <xtensor/xmath.hpp>
 #endif
 
-const int MS = 1024 ; // Min_size of arrays
+const int MS = 4 ; // Min_size of arrays
 const int RM = 128 ; /// RangeMultiplier
 const int PS = 21 ; // pow size
 
@@ -119,26 +119,26 @@ BENCHMARK_TEMPLATE(ALLOC_xtensor, float,	std::plus<	float>)->RangeMultiplier(RM)
 #endif
 
 
-/**
+
 // --> Not really dynamic here ...
 #ifdef XBENCHMARK_USE_XTENSOR
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 8);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 2);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 4);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 8);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 16);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 32);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 64);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 128);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 256);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 512);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 1024);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 2048);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 4096);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 8192);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 16384);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 32768);
-BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 65536);
+//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 8);
+//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 2);
+BENCHMARK_TEMPLATE(ALLOC_xtensor_fixed, 4);
+//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 8);
+//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 16);
+//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 32);
+//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 64);
+BENCHMARK_TEMPLATE(ALLOC_xtensor_fixed, 128);
+//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 256);
+//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 512);
+//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 1024);
+//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 2048);
+//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 4096);
+//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 8192);
+//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 16384);
+//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 32768);
+//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 65536);
 //BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 131072);
 //BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 262144);
 //BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 524288);
@@ -148,7 +148,6 @@ BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 65536);
 //BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 8388608);
 //BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 16777216);
 #endif
- **/
 
 
 BENCHMARK_MAIN();
