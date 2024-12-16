@@ -1,5 +1,9 @@
-On sorted list
 
+
+## Purpose
+
+Assume you have an **integer array** `A` of length `n`. Assue the values are **sorted**. 
+You are **searching** for the **index** `i` where `A[i] = target`. You want this to be **fast**.
 
 
 # `NAIVE_find` : naive implementation of find algorithm
@@ -44,3 +48,9 @@ The intrinsic implementation use explicit SIMD registers. It uses `compare=` SIM
     -   not poertable
     -   only for aligned arrays
 
+
+
+## Results : 
+Results seems to depend on the compiler we use. 
+
+Here are the results of the benchmak : 
