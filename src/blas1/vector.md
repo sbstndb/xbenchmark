@@ -41,7 +41,7 @@ We found that xtensor is slower for very short containers (4 values) but average
 Furthermore, the `xt::eval` slow down to lot, in all cases. We really need to investiguate this part.
 `xt::xtensor_fixed` is better for very tiny arrays but worst for lrge arrays. Hence, I suggest using them for tiny arrays according to this analysis. 
 
-
+```
 ------------------------------------------------------------------------------------------------------------------
 Benchmark                                                        Time             CPU   Iterations UserCounters...
 ------------------------------------------------------------------------------------------------------------------
@@ -75,7 +75,7 @@ BLAS1_op_xtensor_fixed<16384>                                 5036 ns         50
 BLAS1_op_xtensor_fixed_noalias<4>                            0.409 ns        0.409 ns   1000000000 items_per_second=9.78928G/s
 BLAS1_op_xtensor_fixed_noalias<128>                           12.7 ns         12.7 ns     55174431 items_per_second=10.0923G/s
 BLAS1_op_xtensor_fixed_noalias<16384>                         3051 ns         3051 ns       229301 items_per_second=5.37038G/s
-
+```
 
 
 
