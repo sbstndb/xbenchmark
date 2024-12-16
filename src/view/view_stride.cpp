@@ -71,7 +71,7 @@ void VIEW_stride_aligned_masked(benchmark::State& state) {
 #ifdef XBENCHMARK_USE_XTENSOR
 template <typename T>
 void VIEW_stride_xarray(benchmark::State& state) {
-	const int vector_size = state.range(0);
+	const unsigned long vector_size = state.range(0);
 	xt::xarray<T> vec1 = xt::xarray<T>::from_shape({vector_size});
 	xt::xarray<T> vec2 = xt::xarray<T>::from_shape({vector_size});
 	xt::xarray<T> result = xt::xarray<T>::from_shape({vector_size});
@@ -93,7 +93,7 @@ void VIEW_stride_xarray(benchmark::State& state) {
 #ifdef XBENCHMARK_USE_XTENSOR
 template <typename T>
 void VIEW_stride_xtensor(benchmark::State& state) {
-	const int vector_size = state.range(0);
+	const unsigned long vector_size = state.range(0);
 	xt::xtensor<T, 1> vec1 = xt::xtensor<T, 1>::from_shape({vector_size});
 	xt::xtensor<T, 1> vec2 = xt::xtensor<T, 1>::from_shape({vector_size});
 	xt::xtensor<T, 1> result = xt::xtensor<T, 1>::from_shape({vector_size});
@@ -116,7 +116,7 @@ void VIEW_stride_xtensor(benchmark::State& state) {
 #ifdef XBENCHMARK_USE_XTENSOR
 template <typename T>
 void VIEW_stride_xtensor_strided(benchmark::State& state) {
-	const int vector_size = state.range(0);
+	const unsigned long vector_size = state.range(0);
 	xt::xtensor<T, 1> vec1 = xt::xtensor<T, 1>::from_shape({vector_size});
 	xt::xtensor<T, 1> vec2 = xt::xtensor<T, 1>::from_shape({vector_size});
 	xt::xtensor<T, 1> result = xt::xtensor<T, 1>::from_shape({vector_size});
@@ -137,7 +137,7 @@ void VIEW_stride_xtensor_strided(benchmark::State& state) {
 #ifdef XBENCHMARK_USE_XTENSOR
 template <typename T>
 void VIEW_stride_xtensor_strided_range(benchmark::State& state) {
-	const int vector_size = state.range(0);
+	const unsigned long vector_size = state.range(0);
 	xt::xtensor<T, 1> vec1 = xt::xtensor<T, 1>::from_shape({vector_size});
 	xt::xtensor<T, 1> vec2 = xt::xtensor<T, 1>::from_shape({vector_size});
 	xt::xtensor<T, 1> result = xt::xtensor<T, 1>::from_shape({vector_size});
@@ -162,7 +162,7 @@ void VIEW_stride_xtensor_strided_range(benchmark::State& state) {
 #ifdef XBENCHMARK_USE_XTENSOR
 template <typename T>
 void VIEW_stride_xtensor_masked(benchmark::State& state) {
-	const int vector_size = state.range(0);
+	const unsigned long vector_size = state.range(0);
 	xt::xtensor<T, 1> vec1 = xt::xtensor<T, 1>::from_shape({vector_size});
 	xt::xtensor<T, 1> vec2 = xt::xtensor<T, 1>::from_shape({vector_size});
 	xt::xtensor<T, 1> result = xt::xtensor<T, 1>::from_shape({vector_size});
@@ -190,7 +190,7 @@ void VIEW_stride_xtensor_masked(benchmark::State& state) {
 #ifdef XBENCHMARK_USE_XTENSOR
 template <typename T>
 void VIEW_stride_xtensor_masked2(benchmark::State& state) {
-	const int vector_size = state.range(0);
+	const unsigned long vector_size = state.range(0);
 	xt::xtensor<T, 1> vec1 = xt::xtensor<T, 1>::from_shape({vector_size});
 	xt::xtensor<T, 1> vec2 = xt::xtensor<T, 1>::from_shape({vector_size});
 	xt::xtensor<T, 1> result = xt::xtensor<T, 1>::from_shape({vector_size});
@@ -216,7 +216,7 @@ void VIEW_stride_xtensor_masked2(benchmark::State& state) {
 #ifdef XBENCHMARK_USE_XTENSOR
 template <typename T>
 void VIEW_stride_xtensor_raw_masked(benchmark::State& state) {
-	const int vector_size = state.range(0);
+	const unsigned long vector_size = state.range(0);
 	xt::xtensor<T, 1> vec1 = xt::xtensor<T, 1>::from_shape({vector_size});
 	xt::xtensor<T, 1> vec2 = xt::xtensor<T, 1>::from_shape({vector_size});
 	xt::xtensor<T, 1> result = xt::xtensor<T, 1>::from_shape({vector_size});
@@ -252,7 +252,7 @@ BENCHMARK_TEMPLATE(VIEW_stride_aligned_masked, float     )->RangeMultiplier(RM)-
 BENCHMARK_TEMPLATE(VIEW_stride_xarray, float	)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(VIEW_stride_xtensor, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(VIEW_stride_xtensor_strided, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(VIEW_stride_xtensor_strided, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(VIEW_stride_xtensor_strided_range, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(VIEW_stride_xtensor_masked, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(VIEW_stride_xtensor_masked2, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(VIEW_stride_xtensor_raw_masked, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);

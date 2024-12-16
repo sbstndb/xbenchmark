@@ -101,7 +101,7 @@ void BLAS1_fma_std_vector(benchmark::State& state) {
 #ifdef XBENCHMARK_USE_XTENSOR
 template <typename T, typename Op>
 void BLAS1_fma_xarray(benchmark::State& state) {
-	const int vector_size = state.range(0);
+	const unsigned long vector_size = state.range(0);
 	T a = static_cast<T>(2.0) ;
 	xt::xarray<T> vec1 = xt::xarray<T>::from_shape({vector_size});
 	xt::xarray<T> vec2 = xt::xarray<T>::from_shape({vector_size});
@@ -122,7 +122,7 @@ void BLAS1_fma_xarray(benchmark::State& state) {
 #ifdef XBENCHMARK_USE_XTENSOR
 template <typename T, typename Op>
 void BLAS1_fma_xtensor(benchmark::State& state) {
-	const int vector_size = state.range(0);
+	const unsigned long vector_size = state.range(0);
 	T a = static_cast<T>(2.0) ;    
 	xt::xtensor<T, 1> vec1   = xt::xtensor<T,1>::from_shape({vector_size});
 	xt::xtensor<T, 1> vec2   = xt::xtensor<T,1>::from_shape({vector_size});
@@ -143,7 +143,7 @@ void BLAS1_fma_xtensor(benchmark::State& state) {
 #ifdef XBENCHMARK_USE_XTENSOR
 template <typename T, typename Op>
 void BLAS1_fma_xtensor_eval(benchmark::State& state) {
-	const int vector_size = state.range(0);
+	const unsigned long vector_size = state.range(0);
 	T a = static_cast<T>(2.0) ;    
 	xt::xtensor<T, 1> vec1   = xt::xtensor<T,1>::from_shape({vector_size});
 	xt::xtensor<T, 1> vec2   = xt::xtensor<T,1>::from_shape({vector_size});
