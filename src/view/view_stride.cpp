@@ -17,11 +17,44 @@
 #include <immintrin.h>
 #endif
 
-const int MS = 1024 ; // Min_size of arrays
+const int MS = 16 ; // Min_size of arrays
 const int RM = 128 ; /// RangeMultiplier
 const int PS = 21 ; // pow size
 
 const int stride = 4 ; 
+
+
+template <typename T>
+void VIEW_stride_aligned(benchmark::State& state) {
+        const int vector_size = state.range(0);
+
+        constexpr std::size_t alignment = 64;
+
+        // Allocate aligned memory using std::aligned_alloc
+        T* vec1 = static_cast<T*>(std::aligned_alloc(alignment, vector_size * sizeof(T)));
+        T* vec2 = static_cast<T*>(std::aligned_alloc(alignment, vector_size * sizeof(T)));
+        T* result = static_cast<T*>(std::aligned_alloc(alignment, vector_size * sizeof(T)));
+        // Initialize arrays
+        for (int i = 0; i < vector_size; ++i) {
+                vec1[i] = 1;
+                vec2[i] = 2;
+                result[i] = 0 ;
+        }
+        for (auto _ : state) {
+                // compute loop
+                for (int i = 0; i < vector_size; i+=4) {
+                        result[i] =  vec1[i] + vec2[i] ;
+                }
+                benchmark::DoNotOptimize(result); // Prevent compiler optimizations
+        }
+        // Free aligned memory
+        std::free(vec1);
+        std::free(vec2);
+        std::free(result);
+        state.SetItemsProcessed(state.iterations() * vector_size);
+}
+
+
 
 template <typename T>
 void VIEW_stride_aligned_masked(benchmark::State& state) {
@@ -245,6 +278,7 @@ void VIEW_stride_xtensor_raw_masked(benchmark::State& state) {
 
 // Power of two rule
 //
+BENCHMARK_TEMPLATE(VIEW_stride_aligned, float     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(VIEW_stride_aligned_masked, float     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 #ifdef XBENCHMARK_USE_IMMINTRIN
 #endif
