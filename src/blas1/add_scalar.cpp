@@ -30,20 +30,17 @@ void BLAS1_op_raw(benchmark::State& state) {
 	Op operation ; 
 
 	T* vec1 = static_cast<T*>(std::malloc(vector_size * sizeof(T)));
-	T* vec2 = static_cast<T*>(std::malloc(vector_size * sizeof(T)));
 	T* result = static_cast<T*>(std::malloc(vector_size * sizeof(T)));
 	for (int i = 0; i < vector_size; ++i) {
 		vec1[i] = 1;
-		vec2[i] = 2;
 	}
 	for (auto _ : state) {
 		for (int i = 0; i < vector_size; ++i) {
-			result[i] = operation(vec1[i] , vec2[i]) ;
+			result[i] = operation(vec1[i] , 1.0) ;
 		}
 		benchmark::DoNotOptimize(result); // compiler artifice 
 	}
 	free(vec1) ;
-	free(vec2) ;
 	free(result) ;
 	state.SetItemsProcessed(state.iterations() * vector_size);
 }
@@ -55,22 +52,19 @@ void BLAS1_op_aligned(benchmark::State& state) {
 	constexpr std::size_t alignment = 64; 
 
 	T* vec1 = static_cast<T*>(std::aligned_alloc(alignment, vector_size * sizeof(T)));
-	T* vec2 = static_cast<T*>(std::aligned_alloc(alignment, vector_size * sizeof(T)));
 	T* result = static_cast<T*>(std::aligned_alloc(alignment, vector_size * sizeof(T)));
 	for (int i = 0; i < vector_size; ++i) {
 		vec1[i] = 1;
-		vec2[i] = 2;
 	}
 	for (auto _ : state) {
 		// compute loop
 		for (int i = 0; i < vector_size; ++i) {
-			result[i] = operation(vec1[i] , vec2[i]) ;
+			result[i] = operation(vec1[i] , 1.0) ;
 
 		}
 		benchmark::DoNotOptimize(result); // Prevent compiler optimizations
 	}
 	std::free(vec1);
-	std::free(vec2);
 	std::free(result);
 	state.SetItemsProcessed(state.iterations() * vector_size);
 }
@@ -81,11 +75,10 @@ void BLAS1_op_std_vector(benchmark::State& state) {
 	const int vector_size = state.range(0);  // Vector size defined by benchmark range
 	Op operation;
 	std::vector<T> vec1(vector_size, 1);
-	std::vector<T> vec2(vector_size, 2);
 	std::vector<T> result(vector_size);
 	for (auto _ : state) {
 		for (int i = 0; i < vector_size; ++i) {
-			result[i] = operation(vec1[i] , vec2[i]) ; 
+			result[i] = operation(vec1[i] , 1.0) ; 
 		}
 		benchmark::DoNotOptimize(result); // compiler artifice 
 	}
@@ -97,22 +90,20 @@ template <typename T, typename Op>
 void BLAS1_op_xarray(benchmark::State& state) {
 	const unsigned long vector_size = static_cast<unsigned long>(state.range(0));
 	xt::xarray<T> vec1 = xt::xarray<T>::from_shape({vector_size});
-	xt::xarray<T> vec2 = xt::xarray<T>::from_shape({vector_size});
 	xt::xarray<T> result = xt::xarray<T>::from_shape({vector_size});
 	//vec1.fill(1.0) ; 
 	//vec2.fill(2.0);
 	vec1 = 1.0 ; 
-	vec2 = 2.0 ; 
 	for (auto _ : state) {
 		// lot of constexpr because of xtensor itself
 		if constexpr(std::is_same_v<Op, std::plus<T>>){
-			xt::noalias(result) = xt::eval(vec1 + vec2);
+			xt::noalias(result) = xt::eval(vec1 + 1.0);
 		} else if constexpr(std::is_same_v<Op, std::minus<T>>){
-			xt::noalias(result) = xt::eval(vec1 - vec2);
+			xt::noalias(result) = xt::eval(vec1 - 1.0);
 		} else if constexpr(std::is_same_v<Op, std::multiplies<T>>){
-			xt::noalias(result) = xt::eval(vec1 * vec2);
+			xt::noalias(result) = xt::eval(vec1 * 1.0);
 		} else if constexpr(std::is_same_v<Op, std::divides<T>>){
-			xt::noalias(result) = xt::eval(vec1 / vec2);
+			xt::noalias(result) = xt::eval(vec1 / 1.0);
 		}
 		benchmark::DoNotOptimize(result.data());
 	}
@@ -125,20 +116,18 @@ template <typename T, typename Op>
 void BLAS1_op_xtensor(benchmark::State& state) {
 	const unsigned long vector_size = state.range(0);
 	xt::xtensor<T, 1> vec1   = xt::xtensor<T,1>::from_shape({vector_size});
-	xt::xtensor<T, 1> vec2   = xt::xtensor<T,1>::from_shape({vector_size});
 	xt::xtensor<T, 1> result = xt::xtensor<T,1>::from_shape({vector_size});
 	vec1.fill(1) ; 
-	vec2.fill(2) ; 
 	for (auto _ : state) {
 		// lots of constexpr becaus of xtensor itself
 		if constexpr(std::is_same_v<Op, std::plus<T>>){
-			xt::noalias(result) = vec1 + vec2;
+			xt::noalias(result) = vec1 + 1.0;
 		} else if constexpr(std::is_same_v<Op, std::minus<T>>){
-			xt::noalias(result) = vec1 - vec2;
+			xt::noalias(result) = vec1 - 1.0;
 		} else if constexpr(std::is_same_v<Op, std::multiplies<T>>){
-			xt::noalias(result) = vec1 * vec2;
+			xt::noalias(result) = vec1 * 1.0;
 		} else if constexpr(std::is_same_v<Op, std::divides<T>>){
-			xt::noalias(result) = vec1 / vec2;
+			xt::noalias(result) = vec1 / 1.0;
 		}
 		benchmark::DoNotOptimize(result.data());
 	}
@@ -146,27 +135,108 @@ void BLAS1_op_xtensor(benchmark::State& state) {
 }
 #endif
 
+
+#ifdef XBENCHMARK_USE_XTENSOR
+template <typename T, typename Op>
+void BLAS1_op_xtensor_aligned_64(benchmark::State& state) {
+        const unsigned long vector_size = state.range(0);
+	const int align_size = 64 ; 
+        xt::xtensor<T, 1> vec1   = xt::xtensor<T,1, xt::layout_type::row_major, xsimd::aligned_allocator<T, align_size>>::from_shape({vector_size});
+        xt::xtensor<T, 1> result = xt::xtensor<T,1, xt::layout_type::row_major, xsimd::aligned_allocator<T, align_size>>::from_shape({vector_size});
+        vec1.fill(1) ;
+        for (auto _ : state) {
+                // lots of constexpr becaus of xtensor itself
+                if constexpr(std::is_same_v<Op, std::plus<T>>){
+                        xt::noalias(result) = vec1 + 1.0;
+                } else if constexpr(std::is_same_v<Op, std::minus<T>>){
+                        xt::noalias(result) = vec1 - 1.0;
+                } else if constexpr(std::is_same_v<Op, std::multiplies<T>>){
+                        xt::noalias(result) = vec1 * 1.0;
+                } else if constexpr(std::is_same_v<Op, std::divides<T>>){
+                        xt::noalias(result) = vec1 / 1.0;
+                }
+                benchmark::DoNotOptimize(result.data());
+        }
+        state.SetItemsProcessed(state.iterations() * vector_size);
+}
+#endif
+
+
 #ifdef XBENCHMARK_USE_XTENSOR
 template <typename T, typename Op>
 void BLAS1_op_xtensor_explicit(benchmark::State& state) {
         const unsigned long vector_size = state.range(0);
+        const int align_size = 64 ;
         xt::xtensor<T, 1> vec1   = xt::xtensor<T,1>::from_shape({vector_size});
-        xt::xtensor<T, 1> vec2   = xt::xtensor<T,1>::from_shape({vector_size});
         xt::xtensor<T, 1> result = xt::xtensor<T,1>::from_shape({vector_size});
         vec1.fill(1) ;
-        vec2.fill(2) ;
         for (auto _ : state) {
                 // lots of constexpr becaus of xtensor itself
                 if constexpr(std::is_same_v<Op, std::plus<T>>){
-			for (size_t i =  0 ; i < vector_size ; i++){
-				result(i) = vec1(i) + vec2(i) ; 
+                        for (int i = 0 ; i < vector_size ; i++){
+                                result(i) = vec1(i) + 1.0 ;
+                        }
+                } else if constexpr(std::is_same_v<Op, std::minus<T>>){
+                        xt::noalias(result) = vec1 - 1.0;
+                } else if constexpr(std::is_same_v<Op, std::multiplies<T>>){
+                        xt::noalias(result) = vec1 * 1.0;
+                } else if constexpr(std::is_same_v<Op, std::divides<T>>){
+                        xt::noalias(result) = vec1 / 1.0;
+                }
+                benchmark::DoNotOptimize(result.data());
+        }
+        state.SetItemsProcessed(state.iterations() * vector_size);
+}
+#endif
+
+#ifdef XBENCHMARK_USE_XTENSOR
+template <typename T, typename Op>
+void BLAS1_op_xtensor_explicit_aligned_16(benchmark::State& state) {
+        const unsigned long vector_size = state.range(0);
+        const int align_size = 16 ;
+        xt::xtensor<T, 1> vec1   = xt::xtensor<T,1, xt::layout_type::row_major, xsimd::aligned_allocator<T, align_size>>::from_shape({vector_size});
+        xt::xtensor<T, 1> result = xt::xtensor<T,1, xt::layout_type::row_major, xsimd::aligned_allocator<T, align_size>>::from_shape({vector_size});
+        vec1.fill(1) ;
+        for (auto _ : state) {
+                // lots of constexpr becaus of xtensor itself
+                if constexpr(std::is_same_v<Op, std::plus<T>>){
+                        for (int i = 0 ; i < vector_size ; i++){
+                                result(i) = vec1(i) + 1.0 ;
+                        }
+                } else if constexpr(std::is_same_v<Op, std::minus<T>>){
+                        xt::noalias(result) = vec1 - 1.0;
+                } else if constexpr(std::is_same_v<Op, std::multiplies<T>>){
+                        xt::noalias(result) = vec1 * 1.0;
+                } else if constexpr(std::is_same_v<Op, std::divides<T>>){
+                        xt::noalias(result) = vec1 / 1.0;
+                }
+                benchmark::DoNotOptimize(result.data());
+        }
+        state.SetItemsProcessed(state.iterations() * vector_size);
+}
+#endif
+
+
+#ifdef XBENCHMARK_USE_XTENSOR
+template <typename T, typename Op>
+void BLAS1_op_xtensor_explicit_aligned_64(benchmark::State& state) {
+        const unsigned long vector_size = state.range(0);
+	const int align_size = 64 ; 
+        xt::xtensor<T, 1> vec1   = xt::xtensor<T,1, xt::layout_type::row_major, xsimd::aligned_allocator<T, align_size>>::from_shape({vector_size});
+        xt::xtensor<T, 1> result = xt::xtensor<T,1, xt::layout_type::row_major, xsimd::aligned_allocator<T, align_size>>::from_shape({vector_size});
+        vec1.fill(1) ;
+        for (auto _ : state) {
+                // lots of constexpr becaus of xtensor itself
+                if constexpr(std::is_same_v<Op, std::plus<T>>){
+			for (int i = 0 ; i < vector_size ; i++){
+				result(i) = vec1(i) + 1.0 ; 
 			}
                 } else if constexpr(std::is_same_v<Op, std::minus<T>>){
-                        xt::noalias(result) = vec1 - vec2;
+                        xt::noalias(result) = vec1 - 1.0;
                 } else if constexpr(std::is_same_v<Op, std::multiplies<T>>){
-                        xt::noalias(result) = vec1 * vec2;
+                        xt::noalias(result) = vec1 * 1.0;
                 } else if constexpr(std::is_same_v<Op, std::divides<T>>){
-                        xt::noalias(result) = vec1 / vec2;
+                        xt::noalias(result) = vec1 / 1.0;
                 }
                 benchmark::DoNotOptimize(result.data());
         }
@@ -176,26 +246,61 @@ void BLAS1_op_xtensor_explicit(benchmark::State& state) {
 
 
 
+/**
+#ifdef XBENCHMARK_USE_XTENSOR
+template <typename T, typename Op>
+void BLAS1_op_xtensor_explicit_xsimd(benchmark::State& state) {
+        const unsigned long vector_size = state.range(0);
+	const int align_size = 64 ; 
+        xt::xtensor<T, 1> vec1   = xt::xtensor<T,1, xt::layout_type::row_major, xsimd::aligned_allocator<T, align_size>>::from_shape({vector_size});
+        xt::xtensor<T, 1> result = xt::xtensor<T,1, xt::layout_type::row_major, xsimd::aligned_allocator<T, align_size>>::from_shape({vector_size});
+        vec1.fill(1) ;
+	using simd_type = xt_simd::simd_type<double>;
+	size_t simd_size = simd_type::size;
+
+        for (auto _ : state) {
+                // lots of constexpr becaus of xtensor itself
+                if constexpr(std::is_same_v<Op, std::plus<T>>){
+		        for (size_t i = 0; i < vec1.size(); i += simd_size) {
+		                xt_simd::store_as(
+		                        result.data() + i,
+		                        xt_simd::load_as<double>(vec1.data() + i) + xt_simd::broadcast_as<double>(1.0),
+		                        xt_simd::aligned_mode() // aligned or unaligned mode depending on your data
+		                );
+		        } 
+                } else if constexpr(std::is_same_v<Op, std::minus<T>>){
+                        xt::noalias(result) = vec1 - 1.0;
+                } else if constexpr(std::is_same_v<Op, std::multiplies<T>>){
+                        xt::noalias(result) = vec1 * 1.0;
+                } else if constexpr(std::is_same_v<Op, std::divides<T>>){
+                        xt::noalias(result) = vec1 / 1.0;
+                }
+                benchmark::DoNotOptimize(result.data());
+        }
+        state.SetItemsProcessed(state.iterations() * vector_size);
+}
+#endif
+**/
+
+
 #ifdef XBENCHMARK_USE_XTENSOR
 template <typename T, typename Op>
 void BLAS1_op_xtensor_eval(benchmark::State& state) {
 	const unsigned long vector_size = state.range(0);
 	xt::xtensor<T, 1> vec1   = xt::xtensor<T,1>::from_shape({vector_size});
-	xt::xtensor<T, 1> vec2   = xt::xtensor<T,1>::from_shape({vector_size});
 	xt::xtensor<T, 1> result = xt::xtensor<T,1>::from_shape({vector_size});
 	vec1.fill(1);
-	vec2.fill(2);
 	result.fill(0);
 	for (auto _ : state) {
 		// lots of constexpr becaus of xtensor itself
 		if constexpr(std::is_same_v<Op, std::plus<T>>){
-			xt::noalias(result) = xt::eval(vec1 + vec2);
+			xt::noalias(result) = xt::eval(vec1 + 1.0);
 		} else if constexpr(std::is_same_v<Op, std::minus<T>>){
-			xt::noalias(result) = xt::eval(vec1 - vec2);
+			xt::noalias(result) = xt::eval(vec1 - 1.0);
 		} else if constexpr(std::is_same_v<Op, std::multiplies<T>>){
-			xt::noalias(result) = xt::eval(vec1 * vec2);
+			xt::noalias(result) = xt::eval(vec1 * 1.0);
 		} else if constexpr(std::is_same_v<Op, std::divides<T>>){
-			xt::noalias(result) = xt::eval(vec1 / vec2);
+			xt::noalias(result) = xt::eval(vec1 / 1.0);
 		}
 		benchmark::DoNotOptimize(result.data());
 	}
@@ -209,12 +314,10 @@ void BLAS1_op_xtensor_eval(benchmark::State& state) {
 template <std::size_t S>
 void BLAS1_op_xtensor_fixed(benchmark::State& state) {
 	xt::xtensor_fixed<int, xt::xshape<S>> vec1 ;
-	xt::xtensor_fixed<int, xt::xshape<S>> vec2 ;
 	xt::xtensor_fixed<int, xt::xshape<S>> result;
 	vec1.fill(1);
-	vec2.fill(2);
 	for (auto _ : state) {
-		result = vec1 + vec2;
+		result = vec1 + 1.0;
 		benchmark::DoNotOptimize(result.data());
 	}
 	state.SetItemsProcessed(state.iterations() * S);
@@ -226,17 +329,33 @@ void BLAS1_op_xtensor_fixed(benchmark::State& state) {
 template <std::size_t S>
 void BLAS1_op_xtensor_fixed_noalias(benchmark::State& state) {
         xt::xtensor_fixed<int, xt::xshape<S>> vec1 ;
-        xt::xtensor_fixed<int, xt::xshape<S>> vec2 ;
         xt::xtensor_fixed<int, xt::xshape<S>> result;
         vec1.fill(1);
-        vec2.fill(2);
         for (auto _ : state) {
-                xt::noalias(result) = vec1 + vec2;
+                xt::noalias(result) = vec1 + 1.0;
                 benchmark::DoNotOptimize(result.data());
         }
         state.SetItemsProcessed(state.iterations() * S);
 }
 #endif
+
+#ifdef XBENCHMARK_USE_XTENSOR
+template <std::size_t S>
+void BLAS1_op_xtensor_fixed_explicit(benchmark::State& state) {
+        xt::xtensor_fixed<int, xt::xshape<S>> vec1 ;
+        xt::xtensor_fixed<int, xt::xshape<S>> result;
+        vec1.fill(1);
+        for (auto _ : state) {
+		for (int i = 0 ; i < S ; i++){
+	                result(i) = vec1(i) + 1.0;
+		}
+	        benchmark::DoNotOptimize(result.data());
+
+        }
+        state.SetItemsProcessed(state.iterations() * S);
+}
+#endif
+
 
 
 // Power of two rule
@@ -256,8 +375,15 @@ BENCHMARK_TEMPLATE(BLAS1_op_xarray, float, 	std::plus<	float>)->RangeMultiplier(
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor, float,	std::plus<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 //BENCHMARK_TEMPLATE(BLAS1_op_xtensor, float,	std::multiplies<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 //BENCHMARK_TEMPLATE(BLAS1_op_xtensor, float,	std::divides<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+//BENCHMARK_TEMPLATE(BLAS1_op_xarray, float,    std::divides<   float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_aligned_64,float,  std::plus<      float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+
 //
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_explicit, float,     std::plus<      float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_explicit_aligned_16, float,     std::plus<      float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_explicit_aligned_64, float,     std::plus<      float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_explicit_xsimd, float,std::plus<     float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 //
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_eval, float,        std::plus<      float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 //BENCHMARK_TEMPLATE(BLAS1_op_xtensor_eval, float,        std::multiplies<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
@@ -298,6 +424,11 @@ BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 16384);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 4);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 128);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 16384);
+
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_explicit, 4);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_explicit, 128);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_explicit, 16384);
+
 #endif
 
 
