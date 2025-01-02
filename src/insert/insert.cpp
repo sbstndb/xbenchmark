@@ -26,18 +26,16 @@ const int PS = 12 ; // pow size
 
 
 // structure de données à insérer dans les cas _struct
+template <int S>
 struct data {
 	int value ; 
-	int useless0 ; 
-	int useless1 ; 
-	int useless2 ; 
+	char padding[S] ; 
 };
 
 
 // Mesurer le temps de génération des nombres aléatoirtes
 // On s'attend à un cout de génération faible
 // Permet de vérifier qur nos mesures ont du sens lorsque le cout de génération est relativement faible
-template <typename T>
 void INSERT_timer(benchmark::State& state) {
         const int size = state.range(0);  // Vector size defined by benchmark range
 
@@ -58,7 +56,6 @@ void INSERT_timer(benchmark::State& state) {
 
 // inserer des entiersd aléatoires dans une std::map
 // On s'attend à un cout d'insertion faible
-template <typename T>
 void INSERT_map(benchmark::State& state) {
 	const int size = state.range(0);  // Vector size defined by benchmark range
 
@@ -81,7 +78,6 @@ void INSERT_map(benchmark::State& state) {
 // On s'attend à un cout d'insertion encore plus faible
 // Utilisée à titre de comparaison pour mettre à défaut le mythe (ou non) du 
 // "Il faut utiliser une unoreded_map en AMR". 
-template <typename T>
 void INSERT_unordered_map_unsorted(benchmark::State& state) {
         const int size = state.range(0);  // Vector size defined by benchmark range
 
@@ -107,7 +103,6 @@ void INSERT_unordered_map_unsorted(benchmark::State& state) {
 // On s'attend à un cout d'insertion fort
 // Utilisée pour voir dans quelle mesure on peut remplacer la std::map via la vectorisation et l'alignement mémoire
 
-template <typename T>
 void INSERT_vector_insert(benchmark::State& state) {
         const int size = state.range(0);  // Vector size defined by benchmark range
 
@@ -133,9 +128,11 @@ void INSERT_vector_insert(benchmark::State& state) {
 // à partir d'ici, on fait la même chose mais sur des struct, pour mieux representer notre cas d'usage sur samurai. 
 
 
-template <typename T>
+template <int S>
 void INSERT_map_struct(benchmark::State& state) {
         const int size = state.range(0);  // Vector size defined by benchmark range
+	using data = data<S> ; 
+
 
         std::random_device rd ;
         std::mt19937 gen(rd()) ;
@@ -153,10 +150,10 @@ void INSERT_map_struct(benchmark::State& state) {
         state.SetItemsProcessed(state.iterations() * size);
 }
 
-template <typename T>
+template <int S>
 void INSERT_vector_insert_struct(benchmark::State& state) {
         const int size = state.range(0);  // Vector size defined by benchmark range
-
+	using data = data<S> ; 
 
         std::random_device rd ;
         std::mt19937 gen(rd()) ;
@@ -170,7 +167,8 @@ void INSERT_vector_insert_struct(benchmark::State& state) {
 					[](const data& d, int value) { 
 						return d.value < value;
 					});
-			data myData {randomValue, 1, 2, 3} ;
+			data myData ;//{randomValue, 1, 2, 3} ;
+			myData.value = randomValue ; 
                         vector.insert(it, myData) ;
                 }
                 benchmark::DoNotOptimize(vector);
@@ -184,14 +182,16 @@ void INSERT_vector_insert_struct(benchmark::State& state) {
 
 // Power of two rule
 //
-BENCHMARK_TEMPLATE(INSERT_timer, float     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(INSERT_map, float     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(INSERT_unordered_map_unsorted, float     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(INSERT_vector_insert, float     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK(INSERT_timer)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK(INSERT_map)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK(INSERT_unordered_map_unsorted)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK(INSERT_vector_insert)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 
-BENCHMARK_TEMPLATE(INSERT_map_struct, float     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(INSERT_vector_insert_struct, float     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(INSERT_map_struct, 12     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(INSERT_vector_insert_struct, 12     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 
+BENCHMARK_TEMPLATE(INSERT_map_struct, 1020     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(INSERT_vector_insert_struct, 1020     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 
 
 BENCHMARK_MAIN();
