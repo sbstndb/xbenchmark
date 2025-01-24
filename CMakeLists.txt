@@ -59,6 +59,16 @@ if(XBENCHMARK_USE_EIGEN)
 	# list(APPEND GLOBAL_DEPENDENCIES eigen3)
 endif()
 
+if(XBENCHMARK_USE_KOKKOS)
+	find_package(Kokkos REQUIRED)
+	set(CMAKE_CXX_STANDARD 17)
+	set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+	add_compile_definitions(XBENCHMARK_USE_KOKKOS)
+	list(APPEND GLOBAL_DEPENDENCIES Kokkos::kokkos)
+endif()
+
+
 
 
 include_directories(include)
