@@ -15,6 +15,11 @@
 #include <xtensor/xmath.hpp>
 #endif
 
+
+#ifdef XBENCHMARK_USE_EIGEN
+#include <Eigen/Dense>
+#endif
+
 const int MS = 1 ; // Min_size of arrays
 const int RM = 2 ; /// RangeMultiplier
 const int PS = 21 ; // pow size
@@ -23,6 +28,27 @@ const int PS = 21 ; // pow size
 // Note : I cant just use Operations like std::plus<> to reduce code size because I can't 
 // achieve to use it with XTensor in limited time.
 // So I decided to badly duplicate code for now ...
+
+
+#ifdef XBENCHMARK_USE_EIGEN
+template <typename T, typename Op>
+void BLAS1_op_eigen_matrix(benchmark::State& state){
+        const int vector_size = state.range(0);  // Vector size defined by benchmark range
+        Op operation ;
+
+	Eigen::Matrix<T, Eigen::Dynamic, 1>  vec1 = Eigen::Matrix<T, Eigen::Dynamic, 1>::Constant(vector_size, 1.0) ; 
+        Eigen::Matrix<T, Eigen::Dynamic, 1>  vec2 = Eigen::Matrix<T, Eigen::Dynamic, 1>::Constant(vector_size, 2.0) ;
+        Eigen::Matrix<T, Eigen::Dynamic, 1>  result(vector_size) ;
+
+
+	for (auto _ : state){
+		result = vec1.binaryExpr(vec2, operation);
+                benchmark::DoNotOptimize(result); // compiler artifice 
+        }
+        state.SetItemsProcessed(state.iterations() * vector_size);
+}
+#endif
+
 
 template <typename T, typename Op>
 void BLAS1_op_raw(benchmark::State& state) {
@@ -237,6 +263,11 @@ void BLAS1_op_xtensor_fixed_noalias(benchmark::State& state) {
         state.SetItemsProcessed(state.iterations() * S);
 }
 #endif
+
+#ifdef XBENCHMARK_USE_EIGEN
+BENCHMARK_TEMPLATE(BLAS1_op_eigen_matrix, float, std::plus<      float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+#endif
+BENCHMARK_TEMPLATE(BLAS1_op_raw, float, std::plus<      float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 
 
 // Power of two rule

@@ -50,8 +50,11 @@ if(XBENCHMARK_USE_IMMINTRIN)
 endif()
 
 if(XBENCHMARK_USE_EIGEN)
-	find_package(eigen3)
+	find_package(Eigen3 REQUIRED)
 	add_compile_definitions(XBENCHMARK_USE_EIGEN)
+	include_directories(${EIGEN3_INCLUDE_DIRS})
+	add_compile_definitions(XBENCHMARK_USE_EIGEN)
+	list(APPEND GLOBAL_DEPENDENCIES Eigen3::Eigen)
 	# ajouter : 
 	# list(APPEND GLOBAL_DEPENDENCIES eigen3)
 endif()
