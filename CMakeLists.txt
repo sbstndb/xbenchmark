@@ -6,7 +6,24 @@ project(XBenchmarks)
 #set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 
-find_package(benchmark REQUIRED)
+#find_package(benchmark REQUIRED)
+
+include(FetchContent)
+
+# Télécharger Google Benchmark
+FetchContent_Declare(
+  benchmark
+  GIT_REPOSITORY https://github.com/google/benchmark.git
+  GIT_TAG v1.8.3  # Spécifiez la version souhaitée
+)
+
+# Disable Google Test integration
+set(BENCHMARK_ENABLE_GTEST_TESTS OFF CACHE BOOL "Disable Google Test")
+set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Disable testing")
+
+# Intégrer Google Benchmark dans votre projet
+FetchContent_MakeAvailable(benchmark)
+
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mtune=native -march=native -mavx2 -O3 -funroll-loops -ftree-vectorize -g")
 
@@ -23,7 +40,7 @@ if(XBENCHMARK_USE_XTENSOR)
 	include_directories(${XTENSOR_INCLUDE_DIRS})
 	include_directories(${GBENCHMARK_INCLUDE_DIRS})
 	add_compile_definitions(XBENCHMARK_USE_XTENSOR)
-	list(APPEND GLOBAL_DEPENDENCIES xtensor)#xtensor::use_xsimd xtensor::optimize)#, voir ce qu'on doit ajouter 
+	list(APPEND GLOBAL_DEPENDENCIES benchmark::benchmark xtensor)#xtensor::use_xsimd xtensor::optimize)#, voir ce qu'on doit ajouter 
 
 endif()
 
