@@ -15,8 +15,8 @@
 #include <xtensor/xmath.hpp>
 #endif
 
-const int MS = 4 ; // Min_size of arrays
-const int RM = 128 ; /// RangeMultiplier
+const int MS = 1 ; // Min_size of arrays
+const int RM = 2 ; /// RangeMultiplier
 const int PS = 21 ; // pow size
 
 

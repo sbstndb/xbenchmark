@@ -163,6 +163,50 @@ void VIEW_all_xtensor(benchmark::State& state) {
 }
 #endif
 
+#ifdef XBENCHMARK_USE_XTENSOR
+template <typename T>
+void VIEW_all_xtensor_range(benchmark::State& state) {
+        const unsigned long vector_size = state.range(0);
+        xt::xtensor<T, 1> vec1 = xt::xtensor<T, 1>::from_shape({vector_size});
+        xt::xtensor<T, 1> vec2 = xt::xtensor<T, 1>::from_shape({vector_size});
+        xt::xtensor<T, 1> result = xt::xtensor<T, 1>::from_shape({vector_size});
+        vec1.fill(1) ;
+        vec2.fill(2) ;
+        result.fill(0) ;
+        for (auto _ : state) {
+                auto view1 = xt::view(vec1, xt::range(0, vector_size, 1)) ;
+                auto view2 = xt::view(vec2, xt::range(0, vector_size, 1)) ;
+                xt::noalias(result) = view1 + view2;
+
+                benchmark::DoNotOptimize(result.data());
+        }
+        state.SetItemsProcessed(state.iterations() * vector_size);
+}
+#endif
+
+
+#ifdef XBENCHMARK_USE_XTENSOR
+template <typename T>
+void VIEW_all_xtensor_range_only_one(benchmark::State& state) {
+        const unsigned long vector_size = state.range(0);
+        xt::xtensor<T, 1> vec1 = xt::xtensor<T, 1>::from_shape({vector_size});
+        xt::xtensor<T, 1> vec2 = xt::xtensor<T, 1>::from_shape({vector_size});
+        xt::xtensor<T, 1> result = xt::xtensor<T, 1>::from_shape({vector_size});
+        vec1.fill(1) ;
+        vec2.fill(2) ;
+        result.fill(0) ;
+        for (auto _ : state) {
+                auto view1 = xt::view(vec1, xt::range(vector_size-1, vector_size, 1)) ;
+                auto view2 = xt::view(vec2, xt::range(vector_size-1, vector_size, 1)) ;
+                xt::noalias(result) = view1 + view2;
+
+                benchmark::DoNotOptimize(result.data());
+        }
+        state.SetItemsProcessed(state.iterations() * 1);
+}
+#endif
+
+
 
 
 #ifdef XBENCHMARK_USE_XTENSOR
@@ -299,8 +343,10 @@ BENCHMARK_TEMPLATE(VIEW_all_aligned_masked, float     )->RangeMultiplier(RM)->Ra
 #ifdef XBENCHMARK_USE_XTENSOR
 BENCHMARK_TEMPLATE(VIEW_all_xarray, float	)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(VIEW_all_xtensor, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(VIEW_all_xtensor_range, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(VIEW_all_xtensor_strided, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(VIEW_all_xtensor_strided_range, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(VIEW_all_xtensor_range_only_one,float    )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(VIEW_all_xtensor_masked, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(VIEW_all_xtensor_masked_2, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 BENCHMARK_TEMPLATE(VIEW_all_xtensor_raw_masked, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
