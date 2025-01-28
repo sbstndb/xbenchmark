@@ -15,6 +15,10 @@
 #include <xtensor/xmath.hpp>
 #endif
 
+#ifdef XBENCHMARK_USE_EIGEN
+#include <Eigen/Dense>
+#endif
+
 
 #include <utils/custom_arguments.hpp>
 
@@ -24,14 +28,26 @@ int threshold1 = 1024 ;
 int threshold2 = 8096 ;
 
 
-const int MS = 4 ; // Min_size of arrays
-const int RM = 128 ; /// RangeMultiplier
-const int PS = 21 ; // pow size
+#ifdef XBENCHMARK_USE_EIGEN
+template <typename T, typename Op>
+void BLAS1_op_eigen_matrix(benchmark::State& state){
+        const int vector_size = state.range(0);  // Vector size defined by benchmark range
+        Op operation ;
+
+        Eigen::Matrix<T, Eigen::Dynamic, 1>  vec1 = Eigen::Matrix<T, Eigen::Dynamic, 1>::Constant(vector_size, 1.0) ;
+        Eigen::Matrix<T, Eigen::Dynamic, 1>  vec2 = Eigen::Matrix<T, Eigen::Dynamic, 1>::Constant(vector_size, 2.0) ;
+        Eigen::Matrix<T, Eigen::Dynamic, 1>  result(vector_size) ;
 
 
-// Note : I cant just use Operations like std::plus<> to reduce code size because I can't 
-// achieve to use it with XTensor in limited time.
-// So I decided to badly duplicate code for now ...
+        for (auto _ : state){
+                result = vec1.binaryExpr(vec2, operation);
+                benchmark::DoNotOptimize(result); // compiler artifice 
+        }
+        state.SetItemsProcessed(state.iterations() * vector_size);
+}
+#endif
+
+
 
 template <typename T, typename Op>
 void BLAS1_op_raw(benchmark::State& state) {
@@ -249,6 +265,11 @@ void BLAS1_op_xtensor_fixed_noalias(benchmark::State& state) {
         state.SetItemsProcessed(state.iterations() * S);
 }
 #endif
+
+#ifdef XBENCHMARK_USE_EIGEN
+//BENCHMARK_TEMPLATE(BLAS1_op_eigen_matrix, int,   std::less<      int>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+#endif
+
 // Power of two rule
 BENCHMARK_TEMPLATE(BLAS1_op_raw, int,	std::less<	int>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 BENCHMARK_TEMPLATE(BLAS1_op_aligned, int,	std::less<	int>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
