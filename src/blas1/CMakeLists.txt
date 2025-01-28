@@ -1,5 +1,5 @@
-add_executable(blas1_simple_operation vector.cpp)
-target_link_libraries(blas1_simple_operation PRIVATE ${GLOBAL_DEPENDENCIES})
+add_executable(blas1_vector vector.cpp)
+target_link_libraries(blas1_vector PRIVATE ${GLOBAL_DEPENDENCIES})
 
 add_executable(blas1_fma fma.cpp)
 target_link_libraries(blas1_fma PRIVATE ${GLOBAL_DEPENDENCIES})
@@ -14,8 +14,5 @@ target_link_libraries(blas1_add_scalar PRIVATE ${GLOBAL_DEPENDENCIES})
 add_executable(blas1_logic logic.cpp)
 target_link_libraries(blas1_logic PRIVATE ${GLOBAL_DEPENDENCIES})
 
-
-add_executable(blas1_old test_old.cpp)
-target_link_libraries(blas1_old PRIVATE ${GLOBAL_DEPENDENCIES})
 
 
