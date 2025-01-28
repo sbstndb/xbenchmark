@@ -182,6 +182,68 @@ void BLAS1_op_xtensor(benchmark::State& state) {
 #endif
 
 #ifdef XBENCHMARK_USE_XTENSOR
+#ifdef XTENSOR_USE_XSIMD
+template <typename T, typename Op>
+void BLAS1_op_xtensor_aligned_64(benchmark::State& state) {
+        const unsigned long vector_size = state.range(0);
+        const int align_size = 64 ;	
+        xt::xtensor<T, 1> vec1   = xt::xtensor<T,1, xt::layout_type::row_major, xsimd::aligned_allocator<T, align_size>>::from_shape({vector_size});
+        xt::xtensor<T, 1> vec2   = xt::xtensor<T,1, xt::layout_type::row_major, xsimd::aligned_allocator<T, align_size>>::from_shape({vector_size});
+        xt::xtensor<T, 1> result = xt::xtensor<T,1, xt::layout_type::row_major, xsimd::aligned_allocator<T, align_size>>::from_shape({vector_size});
+        vec1.fill(1) ;
+        vec2.fill(2) ;
+        for (auto _ : state) {
+                // lots of constexpr becaus of xtensor itself
+                if constexpr(std::is_same_v<Op, std::plus<T>>){
+                        xt::noalias(result) = vec1 + vec2;
+                } else if constexpr(std::is_same_v<Op, std::minus<T>>){
+                        xt::noalias(result) = vec1 - vec2;
+                } else if constexpr(std::is_same_v<Op, std::multiplies<T>>){
+                        xt::noalias(result) = vec1 * vec2;
+                } else if constexpr(std::is_same_v<Op, std::divides<T>>){
+                        xt::noalias(result) = vec1 / vec2;
+                }
+                benchmark::DoNotOptimize(result.data());
+        }
+        state.SetItemsProcessed(state.iterations() * vector_size);
+}
+#endif
+#endif
+
+#ifdef XBENCHMARK_USE_XTENSOR
+#ifdef XTENSOR_USE_XSIMD
+template <typename T, typename Op>
+void BLAS1_op_xtensor_explicit_aligned(benchmark::State& state) {
+        const unsigned long vector_size = state.range(0);
+        const int align_size = 64 ;	
+        xt::xtensor<T, 1> vec1   = xt::xtensor<T,1, xt::layout_type::row_major, xsimd::aligned_allocator<T, align_size>>::from_shape({vector_size});
+        xt::xtensor<T, 1> vec2   = xt::xtensor<T,1, xt::layout_type::row_major, xsimd::aligned_allocator<T, align_size>>::from_shape({vector_size});
+        xt::xtensor<T, 1> result = xt::xtensor<T,1, xt::layout_type::row_major, xsimd::aligned_allocator<T, align_size>>::from_shape({vector_size});
+        vec1.fill(1) ;
+        vec2.fill(2) ;
+        for (auto _ : state) {
+                // lots of constexpr becaus of xtensor itself
+                if constexpr(std::is_same_v<Op, std::plus<T>>){
+                        for (size_t i =  0 ; i < vector_size ; i++){
+                                result(i) = vec1(i) + vec2(i) ;
+                        }
+                } else if constexpr(std::is_same_v<Op, std::minus<T>>){
+                        xt::noalias(result) = vec1 - vec2;
+                } else if constexpr(std::is_same_v<Op, std::multiplies<T>>){
+                        xt::noalias(result) = vec1 * vec2;
+                } else if constexpr(std::is_same_v<Op, std::divides<T>>){
+                        xt::noalias(result) = vec1 / vec2;
+                }
+                benchmark::DoNotOptimize(result.data());
+        }
+        state.SetItemsProcessed(state.iterations() * vector_size);
+}
+#endif
+#endif
+
+
+
+#ifdef XBENCHMARK_USE_XTENSOR
 template <typename T, typename Op>
 void BLAS1_op_xtensor_explicit(benchmark::State& state) {
         const unsigned long vector_size = state.range(0);
@@ -297,6 +359,10 @@ BENCHMARK_TEMPLATE(BLAS1_op_xtensor, float,	std::plus<	float>)->Apply([](benchma
 //BENCHMARK_TEMPLATE(BLAS1_op_xtensor, float,	std::multiplies<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 //BENCHMARK_TEMPLATE(BLAS1_op_xtensor, float,	std::divides<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
 //
+#ifdef XTENSOR_USE_XSIMD
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_aligned_64, float,     std::plus<      float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_explicit_aligned, float,     std::plus<      float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+#endif
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_explicit, float,     std::plus<      float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 //
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_eval, float,        std::plus<      float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;

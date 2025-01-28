@@ -145,6 +145,7 @@ void BLAS1_op_xtensor(benchmark::State& state) {
 
 
 #ifdef XBENCHMARK_USE_XTENSOR
+#ifdef XTENSOR_USE_XSIMD
 template <typename T, typename Op>
 void BLAS1_op_xtensor_aligned_64(benchmark::State& state) {
         const unsigned long vector_size = state.range(0);
@@ -168,7 +169,7 @@ void BLAS1_op_xtensor_aligned_64(benchmark::State& state) {
         state.SetItemsProcessed(state.iterations() * vector_size);
 }
 #endif
-
+#endif
 
 #ifdef XBENCHMARK_USE_XTENSOR
 template <typename T, typename Op>
@@ -198,6 +199,7 @@ void BLAS1_op_xtensor_explicit(benchmark::State& state) {
 #endif
 
 #ifdef XBENCHMARK_USE_XTENSOR
+#ifdef XTENSOR_USE_XSIMD
 template <typename T, typename Op>
 void BLAS1_op_xtensor_explicit_aligned_16(benchmark::State& state) {
         const unsigned long vector_size = state.range(0);
@@ -223,9 +225,10 @@ void BLAS1_op_xtensor_explicit_aligned_16(benchmark::State& state) {
         state.SetItemsProcessed(state.iterations() * vector_size);
 }
 #endif
-
+#endif
 
 #ifdef XBENCHMARK_USE_XTENSOR
+#ifdef XTENSOR_USE_XSIMD
 template <typename T, typename Op>
 void BLAS1_op_xtensor_explicit_aligned_64(benchmark::State& state) {
         const unsigned long vector_size = state.range(0);
@@ -250,6 +253,7 @@ void BLAS1_op_xtensor_explicit_aligned_64(benchmark::State& state) {
         }
         state.SetItemsProcessed(state.iterations() * vector_size);
 }
+#endif
 #endif
 
 
@@ -374,10 +378,12 @@ BENCHMARK_TEMPLATE(BLAS1_op_std_vector, float,		std::plus<	float>)->Apply([](ben
 #ifdef XBENCHMARK_USE_XTENSOR
 BENCHMARK_TEMPLATE(BLAS1_op_xarray, float, 	std::plus<	float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor, float,	std::plus<	float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
-BENCHMARK_TEMPLATE(BLAS1_op_xtensor_aligned_64,float,  std::plus<      float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_explicit, float,     std::plus<      float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+#ifdef XTENSOR_USE_XSIMD
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_aligned_64,float,  std::plus<      float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_explicit_aligned_16, float,     std::plus<      float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_explicit_aligned_64, float,     std::plus<      float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+#endif
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_eval, float,        std::plus<      float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 #endif
 

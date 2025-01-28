@@ -170,6 +170,35 @@ void BLAS1_complex_xtensor(benchmark::State& state) {
 
 #ifdef XBENCHMARK_USE_XTENSOR
 template <typename T, typename Op>
+void BLAS1_complex_xtensor_explicit(benchmark::State& state) {
+        const unsigned long vector_size = state.range(0);
+        T a = static_cast<T>(2.0) ;
+        xt::xtensor<T, 1> vec1   = xt::xtensor<T,1>::from_shape({vector_size});
+        xt::xtensor<T, 1> vec2   = xt::xtensor<T,1>::from_shape({vector_size});
+        xt::xtensor<T, 1> vec3   = xt::xtensor<T,1>::from_shape({vector_size});
+        xt::xtensor<T, 1> vec4   = xt::xtensor<T,1>::from_shape({vector_size});
+        xt::xtensor<T, 1> result = xt::xtensor<T,1>::from_shape({vector_size});
+        vec1.fill(1) ;
+        vec2.fill(2) ;
+        vec3.fill(3) ;
+        vec4.fill(4) ;
+        result.fill(0) ;
+        for (auto _ : state) {
+                if constexpr(std::is_same_v<Op, complex_op<T>>){
+			for (int i = 0 ; i < vector_size; i++){
+                        	result[i] = a * vec1[i] + vec2[i] * vec3[i] * vec4[i] ;
+			}
+                }
+                benchmark::DoNotOptimize(result.data());
+        }
+        state.SetItemsProcessed(state.iterations() * vector_size);
+}
+#endif
+
+
+
+#ifdef XBENCHMARK_USE_XTENSOR
+template <typename T, typename Op>
 void BLAS1_complex_xtensor_eval(benchmark::State& state) {
 	const unsigned long vector_size = state.range(0);
 	T a = static_cast<T>(2.0) ;    
@@ -254,6 +283,7 @@ BENCHMARK_TEMPLATE(BLAS1_complex_std_vector, float,		complex_op<	float>)->Apply(
 #ifdef XBENCHMARK_USE_XTENSOR
 BENCHMARK_TEMPLATE(BLAS1_complex_xarray, float, 	complex_op<	float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 BENCHMARK_TEMPLATE(BLAS1_complex_xtensor, float,	complex_op<	float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(BLAS1_complex_xtensor_explicit, float,   complex_op<     float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 BENCHMARK_TEMPLATE(BLAS1_complex_xtensor_eval, float,        complex_op<      float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 BENCHMARK_TEMPLATE(BLAS1_complex_xtensor_auto_eval, float,        complex_op<      float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 BENCHMARK_TEMPLATE(BLAS1_complex_xtensor_only_auto_eval, float,        complex_op<      float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
