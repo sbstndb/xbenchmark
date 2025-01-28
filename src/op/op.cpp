@@ -2,6 +2,14 @@
 #include <iostream>
 #include <cmath>
 
+#include <utils/custom_arguments.hpp>
+int min = 1 ;
+int max = 1000000 ;
+int threshold1 = 1024 ;
+int threshold2 = 8096 ;
+
+
+
 const int MS = 2 ; // Min_size of arrays
 const int RM = 2 ; /// RangeMultiplier
 const int PS = 12 ; // pow size

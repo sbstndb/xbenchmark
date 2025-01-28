@@ -30,6 +30,18 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mtune=native -march=native -mavx2 -O3 -
 
 set("GLOBAL_DEPENDENCIES" benchmark::benchmark)
 
+
+add_library(benchmark_helpers STATIC 
+    src/utils/custom_arguments.cpp
+    include/utils/custom_arguments.hpp
+)
+
+target_link_libraries(benchmark_helpers PRIVATE 
+    benchmark::benchmark
+)
+
+list( APPEND GLOBAL_DEPENDENCIES benchmark_helpers)
+
 if(XBENCHMARK_USE_XTENSOR)
 	find_package(xtensor REQUIRED)
 	find_package(xsimd)

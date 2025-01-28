@@ -9,6 +9,12 @@ const int MS = 2 ; // Min_size of arrays
 const int RM = 4 ; /// RangeMultiplier
 const int PS = 8 ; // pow size
 
+#include <utils/custom_arguments.hpp>
+int min = 1 ;
+int max = 100000 ;
+int threshold1 = 1024 ;
+int threshold2 = 8096 ;
+
 
 
 void FIND_equal_naive(benchmark::State& state){
@@ -108,11 +114,11 @@ void FIND_equal_intrinsic(benchmark::State& state){
 
 
 
-BENCHMARK(FIND_equal_naive)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK(FIND_equal_no_break)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK(FIND_equal_compare)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK(FIND_equal_std_find)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK(FIND_equal_std_lower_bound)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK(FIND_equal_intrinsic)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK(FIND_equal_naive)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK(FIND_equal_no_break)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK(FIND_equal_compare)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK(FIND_equal_std_find)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK(FIND_equal_std_lower_bound)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK(FIND_equal_intrinsic)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 BENCHMARK_MAIN() ; 
 

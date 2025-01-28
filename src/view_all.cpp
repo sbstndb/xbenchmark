@@ -17,6 +17,13 @@
 #include <immintrin.h>
 #endif
 
+int min = 1 ;
+int max = 1000000 ;
+int threshold1 = 1024 ;
+int threshold2 = 8096 ;
+
+
+
 const int MS = 1024 ; // Min_size of arrays
 const int RM = 128 ; /// RangeMultiplier
 const int PS = 21 ; // pow size

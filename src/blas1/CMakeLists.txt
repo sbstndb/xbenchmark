@@ -14,3 +14,8 @@ target_link_libraries(blas1_add_scalar PRIVATE ${GLOBAL_DEPENDENCIES})
 add_executable(blas1_logic logic.cpp)
 target_link_libraries(blas1_logic PRIVATE ${GLOBAL_DEPENDENCIES})
 
+
+add_executable(blas1_old test_old.cpp)
+target_link_libraries(blas1_old PRIVATE ${GLOBAL_DEPENDENCIES})
+
+

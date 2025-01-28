@@ -17,6 +17,14 @@
 #include <immintrin.h>
 #endif
 
+#include <utils/custom_arguments.hpp>
+int min = 1 ;
+int max = 1000000 ;
+int threshold1 = 1024 ;
+int threshold2 = 8096 ;
+
+
+
 const int MS = 16 ; // Min_size of arrays
 const int RM = 128 ; /// RangeMultiplier
 const int PS = 21 ; // pow size
@@ -333,23 +341,24 @@ void VIEW_all_xtensor_raw_masked(benchmark::State& state) {
 
 
 
+
 // Power of two rule
 //
-BENCHMARK_TEMPLATE(VIEW_all_raw, float     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(VIEW_all_aligned, float     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(VIEW_all_aligned_masked, float     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(VIEW_all_raw, float     )->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(VIEW_all_aligned, float     )->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(VIEW_all_aligned_masked, float     )->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 #ifdef XBENCHMARK_USE_IMMINTRIN
 #endif
 #ifdef XBENCHMARK_USE_XTENSOR
-BENCHMARK_TEMPLATE(VIEW_all_xarray, float	)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(VIEW_all_xtensor, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(VIEW_all_xtensor_range, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(VIEW_all_xtensor_strided, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(VIEW_all_xtensor_strided_range, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(VIEW_all_xtensor_range_only_one,float    )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(VIEW_all_xtensor_masked, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(VIEW_all_xtensor_masked_2, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(VIEW_all_xtensor_raw_masked, float      )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(VIEW_all_xarray, float	)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(VIEW_all_xtensor, float      )->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(VIEW_all_xtensor_range, float      )->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(VIEW_all_xtensor_strided, float      )->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(VIEW_all_xtensor_strided_range, float      )->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(VIEW_all_xtensor_range_only_one,float    )->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(VIEW_all_xtensor_masked, float      )->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(VIEW_all_xtensor_masked_2, float      )->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(VIEW_all_xtensor_raw_masked, float      )->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 #endif
 
 

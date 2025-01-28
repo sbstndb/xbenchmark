@@ -15,6 +15,15 @@
 #include <xtensor/xmath.hpp>
 #endif
 
+
+#include <utils/custom_arguments.hpp>
+
+int min = 1 ;
+int max = 1000000 ;
+int threshold1 = 1024 ;
+int threshold2 = 8096 ;
+
+
 const int MS = 4 ; // Min_size of arrays
 const int RM = 128 ; /// RangeMultiplier
 const int PS = 21 ; // pow size
@@ -240,20 +249,15 @@ void BLAS1_op_xtensor_fixed_noalias(benchmark::State& state) {
         state.SetItemsProcessed(state.iterations() * S);
 }
 #endif
-
-
 // Power of two rule
-BENCHMARK_TEMPLATE(BLAS1_op_raw, int,	std::less<	int>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BLAS1_op_aligned, int,	std::less<	int>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BLAS1_op_std_vector, int,		std::less<	int>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BLAS1_op_raw, int,	std::less<	int>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(BLAS1_op_aligned, int,	std::less<	int>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(BLAS1_op_std_vector, int,		std::less<	int>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 #ifdef XBENCHMARK_USE_XTENSOR
-BENCHMARK_TEMPLATE(BLAS1_op_xarray, int, 	std::less<	int>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BLAS1_op_xtensor, int,	std::less<	int>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-//
-BENCHMARK_TEMPLATE(BLAS1_op_xtensor_explicit, int,     std::less<      int>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-//
-BENCHMARK_TEMPLATE(BLAS1_op_xtensor_eval, int,        std::less<      int>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-
+BENCHMARK_TEMPLATE(BLAS1_op_xarray, int, 	std::less<	int>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor, int,	std::less<	int>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_explicit, int,     std::less<      int>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_eval, int,        std::less<      int>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 #endif
 
 

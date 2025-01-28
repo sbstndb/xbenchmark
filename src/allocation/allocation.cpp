@@ -15,6 +15,13 @@
 #include <xtensor/xmath.hpp>
 #endif
 
+#include <utils/custom_arguments.hpp>
+int min = 1 ;
+int max = 1000000 ;
+int threshold1 = 1024 ;
+int threshold2 = 8096 ;
+
+
 const int MS = 4 ; // Min_size of arrays
 const int RM = 128 ; /// RangeMultiplier
 const int PS = 21 ; // pow size
@@ -110,12 +117,12 @@ void ALLOC_xtensor_fixed(benchmark::State& state) {
 
 
 // Power of two rule
-BENCHMARK_TEMPLATE(ALLOC_raw, float,	std::plus<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(ALLOC_aligned, float,	std::plus<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(ALLOC_std_vector, float,		std::plus<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(ALLOC_raw, float,	std::plus<	float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(ALLOC_aligned, float,	std::plus<	float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(ALLOC_std_vector, float,		std::plus<	float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 #ifdef XBENCHMARK_USE_XTENSOR
-BENCHMARK_TEMPLATE(ALLOC_xarray, float, 	std::plus<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(ALLOC_xtensor, float,	std::plus<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(ALLOC_xarray, float, 	std::plus<	float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(ALLOC_xtensor, float,	std::plus<	float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 #endif
 
 

@@ -11,6 +11,14 @@
 #include <xtensor/xeval.hpp>
 #endif
 
+#include <utils/custom_arguments.hpp>
+
+int min = 1 ;
+int max = 1000000 ;
+int threshold1 = 1024 ;
+int threshold2 = 8096 ;
+
+
 const int MS = 1 ; // Min_size of arrays
 const int RM = 2 ; /// RangeMultiplier
 const int PS = 21 ; // pow size
@@ -162,13 +170,13 @@ void BLAS1_fma_xtensor_eval(benchmark::State& state) {
 #endif
 
 // Power of two rule
-BENCHMARK_TEMPLATE(BLAS1_fma_raw, float,	fma_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BLAS1_fma_aligned, float,	fma_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BLAS1_fma_std_vector, float,		fma_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BLAS1_fma_raw, float,	fma_op<	float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(BLAS1_fma_aligned, float,	fma_op<	float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(BLAS1_fma_std_vector, float,		fma_op<	float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 #ifdef XBENCHMARK_USE_XTENSOR
-BENCHMARK_TEMPLATE(BLAS1_fma_xarray, float, 	fma_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BLAS1_fma_xtensor, float,	fma_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BLAS1_fma_xtensor_eval, float,        fma_op<      float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BLAS1_fma_xarray, float, 	fma_op<	float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(BLAS1_fma_xtensor, float,	fma_op<	float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(BLAS1_fma_xtensor_eval, float, fma_op< float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 #endif
 BENCHMARK_MAIN();
 

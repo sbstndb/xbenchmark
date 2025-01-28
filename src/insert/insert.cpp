@@ -20,6 +20,13 @@
 #include <immintrin.h>
 #endif
 
+#include <utils/custom_arguments.hpp>
+int min = 1 ;
+int max = 1000000 ;
+int threshold1 = 1024 ;
+int threshold2 = 8096 ;
+
+
 const int MS = 4 ; // Min_size of arrays
 const int RM = 64 ; /// RangeMultiplier
 const int PS = 12 ; // pow size
@@ -182,16 +189,16 @@ void INSERT_vector_insert_struct(benchmark::State& state) {
 
 // Power of two rule
 //
-BENCHMARK(INSERT_timer)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK(INSERT_map)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK(INSERT_unordered_map_unsorted)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK(INSERT_vector_insert)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK(INSERT_timer)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK(INSERT_map)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK(INSERT_unordered_map_unsorted)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK(INSERT_vector_insert)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 
-BENCHMARK_TEMPLATE(INSERT_map_struct, 12     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(INSERT_vector_insert_struct, 12     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(INSERT_map_struct, 12     )->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(INSERT_vector_insert_struct, 12     )->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 
-BENCHMARK_TEMPLATE(INSERT_map_struct, 1020     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(INSERT_vector_insert_struct, 1020     )->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(INSERT_map_struct, 1020     )->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(INSERT_vector_insert_struct, 1020     )->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 
 
 BENCHMARK_MAIN();

@@ -14,6 +14,14 @@ const int RM = 128 ; /// RangeMultiplier
 const int PS = 21 ; // pow size
 
 
+#include <utils/custom_arguments.hpp>
+
+int min = 1 ;
+int max = 1000000 ;
+int threshold1 = 1024 ;
+int threshold2 = 8096 ;
+
+
 template <typename T = double>
 struct complex_op {
 	T operator()(const T& a, const T& b, const T& c, const T& d, const T& e) const {
@@ -240,15 +248,15 @@ void BLAS1_complex_xtensor_only_auto_eval(benchmark::State& state) {
 
 
 // Power of two rule
-BENCHMARK_TEMPLATE(BLAS1_complex_raw, float,	complex_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BLAS1_complex_aligned, float,	complex_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BLAS1_complex_std_vector, float,		complex_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BLAS1_complex_raw, float,	complex_op<	float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(BLAS1_complex_aligned, float,	complex_op<	float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(BLAS1_complex_std_vector, float,		complex_op<	float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 #ifdef XBENCHMARK_USE_XTENSOR
-BENCHMARK_TEMPLATE(BLAS1_complex_xarray, float, 	complex_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BLAS1_complex_xtensor, float,	complex_op<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BLAS1_complex_xtensor_eval, float,        complex_op<      float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BLAS1_complex_xtensor_auto_eval, float,        complex_op<      float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BLAS1_complex_xtensor_only_auto_eval, float,        complex_op<      float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BLAS1_complex_xarray, float, 	complex_op<	float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(BLAS1_complex_xtensor, float,	complex_op<	float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(BLAS1_complex_xtensor_eval, float,        complex_op<      float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(BLAS1_complex_xtensor_auto_eval, float,        complex_op<      float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(BLAS1_complex_xtensor_only_auto_eval, float,        complex_op<      float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 #endif
 
 BENCHMARK_MAIN();

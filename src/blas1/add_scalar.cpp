@@ -15,6 +15,16 @@
 #include <xtensor/xmath.hpp>
 #endif
 
+
+#include <utils/custom_arguments.hpp>
+
+int min = 1 ;
+int max = 1000000 ;
+int threshold1 = 1024 ;
+int threshold2 = 8096 ;
+
+
+
 const int MS = 4 ; // Min_size of arrays
 const int RM = 128 ; /// RangeMultiplier
 const int PS = 21 ; // pow size
@@ -359,67 +369,27 @@ void BLAS1_op_xtensor_fixed_explicit(benchmark::State& state) {
 
 
 // Power of two rule
-BENCHMARK_TEMPLATE(BLAS1_op_raw, float,	std::plus<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-//BENCHMARK_TEMPLATE(BLAS1_op_raw, float,	std::multiplies<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-//BENCHMARK_TEMPLATE(BLAS1_op_raw, float,	std::divides<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BLAS1_op_aligned, float,	std::plus<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-//BENCHMARK_TEMPLATE(BLAS1_op_aligned, float,	std::multiplies<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-//BENCHMARK_TEMPLATE(BLAS1_op_aligned, float,	std::divides<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BLAS1_op_std_vector, float,		std::plus<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-//BENCHMARK_TEMPLATE(BLAS1_op_std_vector, float, 	std::multiplies<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-//BENCHMARK_TEMPLATE(BLAS1_op_std_vector, float, 	std::divides<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
+BENCHMARK_TEMPLATE(BLAS1_op_raw, float,	std::plus<	float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(BLAS1_op_aligned, float,	std::plus<	float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(BLAS1_op_std_vector, float,		std::plus<	float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+
 #ifdef XBENCHMARK_USE_XTENSOR
-BENCHMARK_TEMPLATE(BLAS1_op_xarray, float, 	std::plus<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-//BENCHMARK_TEMPLATE(BLAS1_op_xarray, float, 	std::multiplies<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-//BENCHMARK_TEMPLATE(BLAS1_op_xarray, float, 	std::divides<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BLAS1_op_xtensor, float,	std::plus<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-//BENCHMARK_TEMPLATE(BLAS1_op_xtensor, float,	std::multiplies<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-//BENCHMARK_TEMPLATE(BLAS1_op_xtensor, float,	std::divides<	float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-//BENCHMARK_TEMPLATE(BLAS1_op_xarray, float,    std::divides<   float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-
-BENCHMARK_TEMPLATE(BLAS1_op_xtensor_aligned_64,float,  std::plus<      float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-
-//
-BENCHMARK_TEMPLATE(BLAS1_op_xtensor_explicit, float,     std::plus<      float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BLAS1_op_xtensor_explicit_aligned_16, float,     std::plus<      float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-BENCHMARK_TEMPLATE(BLAS1_op_xtensor_explicit_aligned_64, float,     std::plus<      float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_explicit_xsimd, float,std::plus<     float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-//
-BENCHMARK_TEMPLATE(BLAS1_op_xtensor_eval, float,        std::plus<      float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_eval, float,        std::multiplies<float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_eval, float,        std::divides<   float>)->RangeMultiplier(RM)->Range(MS << 0, 1 << PS);
-
+BENCHMARK_TEMPLATE(BLAS1_op_xarray, float, 	std::plus<	float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor, float,	std::plus<	float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_aligned_64,float,  std::plus<      float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_explicit, float,     std::plus<      float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_explicit_aligned_16, float,     std::plus<      float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_explicit_aligned_64, float,     std::plus<      float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_eval, float,        std::plus<      float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 #endif
 
 
 
 // --> Not really dynamic here ...
 #ifdef XBENCHMARK_USE_XTENSOR
-//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 8);
-//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 2);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 4);
-///BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 8);
-//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 16);
-//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 32);
-//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 64);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 128);
-//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 256);
-//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 512);
-//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 1024);
-//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 2048);
-//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 4096);
-//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 8192);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 16384);
-//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 32768);
-//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 65536);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 131072);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 262144);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 524288);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 1048576);
-//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 2097152);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 4194304);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 8388608);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 16777216);
 //
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 4);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 128);
@@ -428,7 +398,6 @@ BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 16384);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_explicit, 4);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_explicit, 128);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_explicit, 16384);
-
 #endif
 
 
