@@ -108,10 +108,10 @@ void BLAS1_op_xarray(benchmark::State& state) {
 	xt::xarray<T> vec1 = xt::xarray<T>::from_shape({vector_size});
 	xt::xarray<T> vec2 = xt::xarray<T>::from_shape({vector_size});
 	xt::xarray<bool> result = xt::xarray<bool>::from_shape({vector_size});
-	//vec1.fill(1.0) ; 
-	//vec2.fill(2.0);
-	vec1 = 1.0 ; 
-	vec2 = 2.0 ; 
+	vec1.fill(1.0) ; 
+	vec2.fill(2.0);
+//	vec1 = 1.0 ; 
+//	vec2 = 2.0 ; 
 	for (auto _ : state) {
 		// lot of constexpr because of xtensor itself
 		if constexpr(std::is_same_v<Op, std::less<T>>){

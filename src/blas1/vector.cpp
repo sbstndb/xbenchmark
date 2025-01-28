@@ -134,10 +134,10 @@ void BLAS1_op_xarray(benchmark::State& state) {
 	xt::xarray<T> vec1 = xt::xarray<T>::from_shape({vector_size});
 	xt::xarray<T> vec2 = xt::xarray<T>::from_shape({vector_size});
 	xt::xarray<T> result = xt::xarray<T>::from_shape({vector_size});
-	//vec1.fill(1.0) ; 
-	//vec2.fill(2.0);
-	vec1 = 1.0 ; 
-	vec2 = 2.0 ; 
+	vec1.fill(1.0) ; 
+	vec2.fill(2.0);
+//vec1 = 1.0 ; 
+//	vec2 = 2.0 ; 
 	for (auto _ : state) {
 		// lot of constexpr because of xtensor itself
 		if constexpr(std::is_same_v<Op, std::plus<T>>){
@@ -274,36 +274,9 @@ void BLAS1_op_xtensor_fixed_noalias(benchmark::State& state) {
 #endif
 
 
-/**
-static void CustomArguments(benchmark::internal::Benchmark* b) {
-  const int start = MS;       // Valeur de départ
-  const int end = 1 << PS;    // Valeur finale
-  const int threshold1= 512;   // Seuil de changement d
-  const int threshold2 = 4096; // second seuil de changement
-
-  // Phase linéaire (incréments de 1)
-  for (int i = start; i < threshold1 && i <= end; ++i) {
-    b->Arg(i);
-  }
-
-  // Phase linéaire (incréments de 4)
-  for (int i = threshold1; i <= threshold2 && i <= end; i+=8) {
-    b->Arg(i);
-  }
-
-  // Phase exponentielle (puissances de 2)
-  for (int i = threshold2 * 2; i <= end; i *= 2) {
-    b->Arg(i);
-  }
-}
-**/
-
 #ifdef XBENCHMARK_USE_EIGEN
 BENCHMARK_TEMPLATE(BLAS1_op_eigen_matrix, float, std::plus< float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 #endif
-
-BENCHMARK_TEMPLATE(BLAS1_op_raw, float, std::plus<      float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
-BENCHMARK_TEMPLATE(BLAS1_op_raw, float, std::plus<      float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 
 
 // Power of two rule
