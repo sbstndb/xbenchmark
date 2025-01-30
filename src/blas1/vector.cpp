@@ -376,35 +376,30 @@ BENCHMARK_TEMPLATE(BLAS1_op_xtensor_eval, float,        std::plus<      float>)-
 // --> Not really dynamic here ...
 #ifdef XBENCHMARK_USE_XTENSOR
 //BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 8);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 1);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 2);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 3);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 4);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 5);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 6);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 7);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 8);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 16);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 32);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 64);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 128);
-//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 256);
-//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 512);
-//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 1024);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 2048);
-//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 4096);
-//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 8192);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 16384);
-//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 32768);
-//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 65536);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 131072);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 262144);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 524288);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 1048576);
-//BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 2097152);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 4194304);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 8388608);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 16777216);
 //
 //
 //
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 1);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 2);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 3);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 4);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 5);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 6);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 7);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 8);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 16);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 32);

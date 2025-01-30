@@ -104,6 +104,22 @@ void ALLOC_xtensor(benchmark::State& state) {
 
 
 #ifdef XBENCHMARK_USE_XTENSOR
+#ifdef XTENSOR_USE_XSIMD
+template <typename T, typename Op>
+void ALLOC_xtensor_aligned(benchmark::State& state) {
+        const unsigned long vector_size = state.range(0);
+        for (auto _ : state) {
+                xt::xtensor<T, 1> vec = xt::xtensor<T,1, xt::layout_type::row_major, xsimd::aligned_allocator<T, 64>>::from_shape({vector_size});
+                vec.fill(1.0) ;
+                benchmark::DoNotOptimize(vec);
+        }
+        state.SetItemsProcessed(state.iterations() * vector_size);
+}
+#endif
+#endif
+
+
+#ifdef XBENCHMARK_USE_XTENSOR
 template <std::size_t S>
 void ALLOC_xtensor_fixed(benchmark::State& state) {
 	for (auto _ : state) {
@@ -123,32 +139,32 @@ BENCHMARK_TEMPLATE(ALLOC_std_vector, float,		std::plus<	float>)->Apply([](benchm
 #ifdef XBENCHMARK_USE_XTENSOR
 BENCHMARK_TEMPLATE(ALLOC_xarray, float, 	std::plus<	float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 BENCHMARK_TEMPLATE(ALLOC_xtensor, float,	std::plus<	float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
+BENCHMARK_TEMPLATE(ALLOC_xtensor_aligned, float,        std::plus<      float>)->Apply([](benchmark::internal::Benchmark* b) {CustomArguments(b, min, max, threshold1, threshold2);});;
 #endif
 
 
 
 // --> Not really dynamic here ...
 #ifdef XBENCHMARK_USE_XTENSOR
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 8);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 2);
+BENCHMARK_TEMPLATE(ALLOC_xtensor_fixed, 2);
 BENCHMARK_TEMPLATE(ALLOC_xtensor_fixed, 4);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 8);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 16);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 32);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 64);
+BENCHMARK_TEMPLATE(ALLOC_xtensor_fixed, 8);
+BENCHMARK_TEMPLATE(ALLOC_xtensor_fixed, 16);
+BENCHMARK_TEMPLATE(ALLOC_xtensor_fixed, 32);
+BENCHMARK_TEMPLATE(ALLOC_xtensor_fixed, 64);
 BENCHMARK_TEMPLATE(ALLOC_xtensor_fixed, 128);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 256);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 512);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 1024);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 2048);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 4096);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 8192);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 16384);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 32768);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 65536);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 131072);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 262144);
-//BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 524288);
+BENCHMARK_TEMPLATE(ALLOC_xtensor_fixed, 256);
+BENCHMARK_TEMPLATE(ALLOC_xtensor_fixed, 512);
+BENCHMARK_TEMPLATE(ALLOC_xtensor_fixed, 1024);
+BENCHMARK_TEMPLATE(ALLOC_xtensor_fixed, 2048);
+BENCHMARK_TEMPLATE(ALLOC_xtensor_fixed, 4096);
+BENCHMARK_TEMPLATE(ALLOC_xtensor_fixed, 8192);
+BENCHMARK_TEMPLATE(ALLOC_xtensor_fixed, 16384);
+BENCHMARK_TEMPLATE(ALLOC_xtensor_fixed, 32768);
+BENCHMARK_TEMPLATE(ALLOC_xtensor_fixed, 65536);
+BENCHMARK_TEMPLATE(ALLOC_xtensor_fixed, 131072);
+BENCHMARK_TEMPLATE(ALLOC_xtensor_fixed, 262144);
+BENCHMARK_TEMPLATE(ALLOC_xtensor_fixed, 524288);
 //BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 1048576);
 //BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 2097152);
 //BENCHMARK_TEMPLATE(BM_XTensorFixedSum, 4194304);

@@ -406,9 +406,53 @@ BENCHMARK_TEMPLATE(BLAS1_op_xtensor_eval, float,        std::plus<      float>)-
 
 // --> Not really dynamic here ...
 #ifdef XBENCHMARK_USE_XTENSOR
+
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 1);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 2);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 3);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 4);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 5);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 6);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 7);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 8);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 16);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 32);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 64);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 128);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 2048);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed, 16384);
+
+
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 1);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 2);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 3);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 4);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 5);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 6);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 7);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 8);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 16);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 32);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 64);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 128);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 2048);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 16384);
+
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_explicit, 1);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_explicit, 2);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_explicit, 3);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_explicit, 4);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_explicit, 5);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_explicit, 6);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_explicit, 7);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_explicit, 8);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_explicit, 16);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_explicit, 32);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_explicit, 64);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_explicit, 128);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_explicit, 2048);
+BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_explicit, 16384);
+
 //
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 4);
 BENCHMARK_TEMPLATE(BLAS1_op_xtensor_fixed_noalias, 128);
